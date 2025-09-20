@@ -15,11 +15,7 @@ import {
   Users,
   RefreshCw
 } from 'lucide-react';
-import { useLanguage } from './hooks/useLanguage';
-import { getTranslation } from './utils/translations';
 import { Alert, LiveData } from './types';
-import LanguageSwitcher from './components/LanguageSwitcher';
-import GlassCard from './components/GlassCard';
 import LoginModal from './components/LoginModal';
 import Dashboard from './components/Dashboard';
 import Forecasting from './components/Forecasting';
@@ -34,7 +30,6 @@ import CommunityPortal from './components/CommunityPortal';
 type TabType = 'dashboard' | 'forecasting' | 'analytics' | 'alerts' | 'config' | 'indiaMap' | 'scenarios' | 'diagnostics' | 'community';
 
 function App() {
-  const { currentLanguage } = useLanguage();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -171,15 +166,15 @@ function App() {
   }
 
   const tabs = [
-    { id: 'dashboard', label: getTranslation('dashboard', currentLanguage), icon: <LayoutDashboard className="w-5 h-5" /> },
-    { id: 'forecasting', label: getTranslation('forecasting', currentLanguage), icon: <TrendingUp className="w-5 h-5" /> },
-    { id: 'analytics', label: getTranslation('analytics', currentLanguage), icon: <BarChart3 className="w-5 h-5" /> },
-    { id: 'alerts', label: getTranslation('alerts', currentLanguage), icon: <Bell className="w-5 h-5" /> },
-    { id: 'indiaMap', label: getTranslation('indiaMap', currentLanguage), icon: <Map className="w-5 h-5" /> },
-    { id: 'scenarios', label: getTranslation('scenarios', currentLanguage), icon: <Play className="w-5 h-5" /> },
-    { id: 'diagnostics', label: getTranslation('diagnostics', currentLanguage), icon: <Terminal className="w-5 h-5" /> },
-    { id: 'community', label: getTranslation('community', currentLanguage), icon: <Users className="w-5 h-5" /> },
-    { id: 'config', label: getTranslation('config', currentLanguage), icon: <Settings className="w-5 h-5" /> }
+    { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
+    { id: 'indiaMap', label: 'India Map', icon: <Map className="w-5 h-5" /> },
+    { id: 'forecasting', label: 'Forecasting', icon: <TrendingUp className="w-5 h-5" /> },
+    { id: 'analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" /> },
+    { id: 'alerts', label: 'Alerts', icon: <Bell className="w-5 h-5" /> },
+    { id: 'scenarios', label: 'Scenarios', icon: <Play className="w-5 h-5" /> },
+    { id: 'diagnostics', label: 'Diagnostics', icon: <Terminal className="w-5 h-5" /> },
+    { id: 'community', label: 'Community', icon: <Users className="w-5 h-5" /> },
+    { id: 'config', label: 'Settings', icon: <Settings className="w-5 h-5" /> }
   ];
 
   const activeAlerts = alerts.filter(alert => alert.status === 'active').length;
@@ -222,87 +217,74 @@ function App() {
   };
 
   return (
-    <div 
-      className="min-h-screen relative"
-      style={{
-        background: `
-          linear-gradient(135deg, #0f3057 0%, #0a5c36 50%, #1e5f99 100%),
-          url('https://images.pexels.com/photos/9875414/pexels-photo-9875414.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover
-        `,
-        backgroundBlendMode: 'overlay'
-      }}
-    >
-      {/* Background overlay for better text readability */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0f3057]/90 via-[#0a5c36]/85 to-[#1e5f99]/90" />
-      
-      <div className="relative z-10">
+    <div className="min-h-screen bg-[#f4f6f9]">
       {/* Header */}
-      <div className="backdrop-blur-md bg-white/10 border-b border-white/20">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
-                {getTranslation('title', currentLanguage)}
-              </h1>
-              <p className="text-white/80">
-                {getTranslation('subtitle', currentLanguage)}
-              </p>
-              <p className="text-sm text-white/60 mt-2">
-                {getTranslation('lastUpdated', currentLanguage)}: {currentTime.toLocaleTimeString()} | 
-                {getTranslation('systemStatus', currentLanguage)}: {getTranslation('operational', currentLanguage)}
-              </p>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#0f3057] to-[#2ecc71] rounded-xl">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-[#0f3057]">
+                  SmartGrid Dashboard
+                </h1>
+                <p className="text-gray-600 text-sm">
+                  Advanced Energy Management Platform
+                </p>
+              </div>
             </div>
+            
             <div className="flex items-center space-x-6">
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className={`flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-all duration-300 ${
+                className={`flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg text-gray-700 transition-all duration-300 hover-lift ${
                   isRefreshing ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
-                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                <span>{getTranslation('refresh', currentLanguage)}</span>
+                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'loading-spinner' : ''}`} />
+                <span>Refresh Data</span>
               </button>
               
               <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2 text-sm">
+                <div className="flex items-center space-x-2 text-sm bg-green-50 px-3 py-2 rounded-lg">
                   <Sun className="w-4 h-4 text-[#f39c12]" />
-                  <span className="text-white/80">{liveData.solarGeneration.toFixed(2)} {getTranslation('kw', currentLanguage)}</span>
+                  <span className="text-gray-700">{liveData.solarGeneration.toFixed(2)} kW</span>
                 </div>
-                <div className="flex items-center space-x-2 text-sm">
+                <div className="flex items-center space-x-2 text-sm bg-blue-50 px-3 py-2 rounded-lg">
                   <Battery className="w-4 h-4 text-[#2ecc71]" />
-                  <span className="text-white/80">{liveData.batteryCharge}{getTranslation('percent', currentLanguage)}</span>
+                  <span className="text-gray-700">{liveData.batteryCharge}%</span>
                 </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Activity className="w-4 h-4 text-[#3498db]" />
-                  <span className="text-white/80">{liveData.systemHealth}{getTranslation('percent', currentLanguage)}</span>
+                <div className="flex items-center space-x-2 text-sm bg-purple-50 px-3 py-2 rounded-lg">
+                  <Activity className="w-4 h-4 text-[#0f3057]" />
+                  <span className="text-gray-700">{liveData.systemHealth}%</span>
                 </div>
               </div>
-              
-              <LanguageSwitcher />
             </div>
           </div>
         </div>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="backdrop-blur-md bg-white/5 border-b border-white/10">
+      <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6">
-          <nav className="flex space-x-6 overflow-x-auto">
+          <nav className="flex space-x-8 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as TabType)}
-                className={`flex items-center space-x-2 py-4 px-3 border-b-2 font-medium text-sm transition-all duration-300 whitespace-nowrap ${
+                className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm transition-all duration-300 whitespace-nowrap hover-lift ${
                   activeTab === tab.id
-                    ? 'border-white text-white bg-white/10'
-                    : 'border-transparent text-white/70 hover:text-white hover:border-white/30 hover:bg-white/5'
+                    ? 'border-[#0f3057] text-[#0f3057] bg-blue-50/50'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 {tab.icon}
                 <span>{tab.label}</span>
                 {tab.id === 'alerts' && activeAlerts > 0 && (
-                  <span className="bg-[#e74c3c] text-white text-xs rounded-full px-2 py-0.5 ml-2 animate-pulse">
+                  <span className="bg-[#f39c12] text-white text-xs rounded-full px-2 py-0.5 ml-2 animate-pulse">
                     {activeAlerts}
                   </span>
                 )}
@@ -313,9 +295,8 @@ function App() {
       </div>
 
       {/* Tab Content */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {renderTabContent()}
-      </div>
       </div>
     </div>
   );

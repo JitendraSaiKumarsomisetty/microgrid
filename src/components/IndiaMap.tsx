@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import { MapPin, Zap, Battery, Activity } from 'lucide-react';
+import { MapPin, Zap, Battery, Activity, X } from 'lucide-react';
 import { MicrogridSite } from '../types';
-import { useLanguage } from '../hooks/useLanguage';
-import { getTranslation } from '../utils/translations';
-import GlassCard from './GlassCard';
 
 const IndiaMap: React.FC = () => {
-  const { currentLanguage } = useLanguage();
   const [selectedSite, setSelectedSite] = useState<MicrogridSite | null>(null);
 
-  // Mock data for Odisha microgrid sites
+  // Mock data for microgrid sites across India
   const microgridSites: MicrogridSite[] = [
     {
       id: 'bhubaneswar',
@@ -64,6 +60,42 @@ const IndiaMap: React.FC = () => {
       energyGenerated: 28.7,
       batteryLevel: 54,
       lastUpdate: new Date()
+    },
+    {
+      id: 'delhi',
+      name: 'Delhi Metro Grid',
+      coordinates: [77.2090, 28.6139],
+      status: 'good',
+      energyGenerated: 65.4,
+      batteryLevel: 89,
+      lastUpdate: new Date()
+    },
+    {
+      id: 'mumbai',
+      name: 'Mumbai Port',
+      coordinates: [72.8777, 19.0760],
+      status: 'warning',
+      energyGenerated: 41.2,
+      batteryLevel: 67,
+      lastUpdate: new Date()
+    },
+    {
+      id: 'bangalore',
+      name: 'Bangalore Tech Hub',
+      coordinates: [77.5946, 12.9716],
+      status: 'good',
+      energyGenerated: 58.9,
+      batteryLevel: 94,
+      lastUpdate: new Date()
+    },
+    {
+      id: 'chennai',
+      name: 'Chennai Industrial',
+      coordinates: [80.2707, 13.0827],
+      status: 'good',
+      energyGenerated: 47.3,
+      batteryLevel: 81,
+      lastUpdate: new Date()
     }
   ];
 
@@ -85,70 +117,102 @@ const IndiaMap: React.FC = () => {
     }
   };
 
+  const getStatusBg = (status: string) => {
+    switch (status) {
+      case 'good': return 'bg-green-50 border-green-200';
+      case 'warning': return 'bg-yellow-50 border-yellow-200';
+      case 'critical': return 'bg-red-50 border-red-200';
+      default: return 'bg-gray-50 border-gray-200';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <GlassCard className="p-6">
-        <h2 className="text-2xl font-bold text-white mb-2">
-          {getTranslation('indiaMap', currentLanguage)}
-        </h2>
-        <p className="text-white/80">
-          Interactive map showing microgrid installations across Odisha
-        </p>
-      </GlassCard>
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover-lift">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-[#0f3057] mb-2">
+              Interactive India Map
+            </h2>
+            <p className="text-gray-600">
+              Real-time monitoring of microgrid installations across India
+            </p>
+          </div>
+          <MapPin className="w-8 h-8 text-[#0f3057]" />
+        </div>
+      </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-4 gap-6">
         {/* Map Section */}
-        <div className="col-span-2">
-          <GlassCard className="p-6 h-[600px]">
-            <div className="relative w-full h-full">
-              {/* Simplified India Map SVG */}
+        <div className="col-span-3">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover-lift">
+            <div className="relative w-full h-[600px] bg-gradient-to-br from-blue-50 to-green-50 rounded-lg overflow-hidden">
+              {/* Interactive India Map SVG */}
               <svg
-                viewBox="0 0 800 600"
-                className="w-full h-full"
-                style={{ filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))' }}
+                viewBox="0 0 1000 700"
+                className="w-full h-full cursor-pointer"
+                style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.1))' }}
               >
-                {/* India outline (simplified) */}
+                {/* India outline (detailed) */}
                 <path
-                  d="M200 100 L600 100 L650 150 L680 200 L700 300 L680 400 L650 450 L600 500 L400 520 L300 500 L250 450 L200 400 L180 300 L200 200 Z"
-                  fill="rgba(255,255,255,0.1)"
-                  stroke="rgba(255,255,255,0.3)"
+                  d="M300 150 L700 150 L750 200 L780 250 L800 350 L780 450 L750 500 L700 550 L500 570 L400 550 L350 500 L300 450 L280 350 L300 250 Z"
+                  fill="rgba(15, 48, 87, 0.1)"
+                  stroke="#0f3057"
                   strokeWidth="2"
+                  className="hover:fill-blue-100 transition-colors duration-300"
                 />
                 
-                {/* Odisha state highlight */}
-                <path
-                  d="M480 280 L520 280 L540 320 L530 360 L500 380 L470 370 L460 340 L470 300 Z"
-                  fill="rgba(46, 204, 113, 0.2)"
-                  stroke="#2ecc71"
-                  strokeWidth="2"
-                />
+                {/* State boundaries (simplified) */}
+                <g stroke="#0f3057" strokeWidth="1" fill="none" opacity="0.3">
+                  <path d="M350 200 L450 200 L450 300 L350 300 Z" /> {/* Rajasthan */}
+                  <path d="M450 200 L550 200 L550 300 L450 300 Z" /> {/* UP */}
+                  <path d="M550 200 L650 200 L650 300 L550 300 Z" /> {/* Bihar */}
+                  <path d="M350 300 L450 300 L450 400 L350 400 Z" /> {/* Gujarat */}
+                  <path d="M450 300 L550 300 L550 400 L450 400 Z" /> {/* MP */}
+                  <path d="M550 300 L650 300 L650 400 L550 400 Z" /> {/* Odisha */}
+                  <path d="M350 400 L450 400 L450 500 L350 500 Z" /> {/* Maharashtra */}
+                  <path d="M450 400 L550 400 L550 500 L450 500 Z" /> {/* Karnataka */}
+                  <path d="M550 400 L650 400 L650 500 L550 500 Z" /> {/* Tamil Nadu */}
+                </g>
                 
                 {/* Microgrid site pins */}
                 {microgridSites.map((site) => {
-                  const x = 460 + (site.coordinates[0] - 84) * 15;
-                  const y = 380 - (site.coordinates[1] - 19) * 15;
+                  // Convert coordinates to SVG positions
+                  const x = 300 + ((site.coordinates[0] - 68) / (97 - 68)) * 400;
+                  const y = 150 + ((35 - site.coordinates[1]) / (35 - 8)) * 400;
                   
                   return (
-                    <g key={site.id}>
+                    <g key={site.id} className="cursor-pointer">
+                      {/* Pulse animation for active sites */}
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r="15"
+                        fill={getStatusColor(site.status)}
+                        opacity="0.3"
+                        className="animate-ping"
+                      />
+                      {/* Main pin */}
                       <circle
                         cx={x}
                         cy={y}
                         r="8"
                         fill={getStatusColor(site.status)}
                         stroke="white"
-                        strokeWidth="2"
-                        className="cursor-pointer hover:r-10 transition-all duration-300"
+                        strokeWidth="3"
+                        className="hover:r-12 transition-all duration-300 drop-shadow-lg"
                         onClick={() => setSelectedSite(site)}
                       />
-                      <circle
-                        cx={x}
-                        cy={y}
-                        r="12"
-                        fill="transparent"
-                        className="cursor-pointer"
-                        onClick={() => setSelectedSite(site)}
-                      />
+                      {/* Site label */}
+                      <text
+                        x={x}
+                        y={y + 25}
+                        textAnchor="middle"
+                        className="text-xs font-medium fill-gray-700 pointer-events-none"
+                      >
+                        {site.name.split(' ')[0]}
+                      </text>
                     </g>
                   );
                 })}
@@ -156,118 +220,147 @@ const IndiaMap: React.FC = () => {
               
               {/* Site popup */}
               {selectedSite && (
-                <div className="absolute top-4 right-4 w-80">
-                  <GlassCard className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-bold text-white">{selectedSite.name}</h3>
-                      <button
-                        onClick={() => setSelectedSite(null)}
-                        className="text-white/60 hover:text-white transition-colors"
-                      >
-                        ×
-                      </button>
+                <div className="absolute top-4 right-4 w-80 bg-white rounded-xl shadow-xl border border-gray-200 p-6 z-10">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-[#0f3057]">{selectedSite.name}</h3>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: getStatusColor(selectedSite.status) }}
+                        />
+                        <span className="text-sm text-gray-600">{getStatusText(selectedSite.status)}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setSelectedSite(null)}
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <Zap className="w-4 h-4 text-[#f39c12]" />
+                        <span className="text-sm font-medium text-gray-700">Energy Generated</span>
+                      </div>
+                      <span className="text-sm font-bold text-[#f39c12]">
+                        {selectedSite.energyGenerated} kW
+                      </span>
                     </div>
                     
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-white/80">Status:</span>
-                        <span
-                          className="px-2 py-1 rounded-full text-xs font-medium"
-                          style={{
-                            backgroundColor: getStatusColor(selectedSite.status),
-                            color: 'white'
-                          }}
-                        >
-                          {getStatusText(selectedSite.status)}
-                        </span>
+                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <Battery className="w-4 h-4 text-[#2ecc71]" />
+                        <span className="text-sm font-medium text-gray-700">Battery Level</span>
                       </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <Zap className="w-4 h-4 text-[#f39c12]" />
-                          <span className="text-white/80">Energy Generated:</span>
-                        </div>
-                        <span className="text-white font-medium">
-                          {selectedSite.energyGenerated} kW
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <Battery className="w-4 h-4 text-[#2ecc71]" />
-                          <span className="text-white/80">Battery Level:</span>
-                        </div>
-                        <span className="text-white font-medium">
-                          {selectedSite.batteryLevel}%
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <Activity className="w-4 h-4 text-white/60" />
-                          <span className="text-white/80">Last Update:</span>
-                        </div>
-                        <span className="text-white/60 text-sm">
-                          {selectedSite.lastUpdate.toLocaleTimeString()}
-                        </span>
-                      </div>
+                      <span className="text-sm font-bold text-[#2ecc71]">
+                        {selectedSite.batteryLevel}%
+                      </span>
                     </div>
-                  </GlassCard>
+                    
+                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <Activity className="w-4 h-4 text-[#0f3057]" />
+                        <span className="text-sm font-medium text-gray-700">Last Update</span>
+                      </div>
+                      <span className="text-sm text-gray-600">
+                        {selectedSite.lastUpdate.toLocaleTimeString()}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
-          </GlassCard>
+          </div>
         </div>
 
         {/* Sites List */}
         <div className="space-y-4">
-          <GlassCard className="p-4">
-            <h3 className="text-lg font-bold text-white mb-4">Microgrid Sites</h3>
-            <div className="space-y-3">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover-lift">
+            <h3 className="text-lg font-bold text-[#0f3057] mb-4">Microgrid Sites</h3>
+            <div className="space-y-3 max-h-96 overflow-y-auto">
               {microgridSites.map((site) => (
                 <div
                   key={site.id}
-                  className={`p-3 rounded-lg cursor-pointer transition-all duration-300 ${
+                  className={`p-3 rounded-lg cursor-pointer transition-all duration-300 border ${
                     selectedSite?.id === site.id
-                      ? 'bg-white/20 border border-white/30'
-                      : 'bg-white/5 hover:bg-white/10'
+                      ? 'bg-blue-50 border-blue-200 shadow-md'
+                      : `${getStatusBg(site.status)} hover:shadow-md`
                   }`}
                   onClick={() => setSelectedSite(site)}
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-medium text-sm">{site.name}</span>
+                    <span className="font-medium text-gray-900 text-sm">{site.name}</span>
                     <div
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: getStatusColor(site.status) }}
                     />
                   </div>
-                  <div className="text-xs text-white/60 space-y-1">
-                    <div>Energy: {site.energyGenerated} kW</div>
-                    <div>Battery: {site.batteryLevel}%</div>
+                  <div className="text-xs text-gray-600 space-y-1">
+                    <div className="flex justify-between">
+                      <span>Energy:</span>
+                      <span className="font-medium">{site.energyGenerated} kW</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Battery:</span>
+                      <span className="font-medium">{site.batteryLevel}%</span>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
-          </GlassCard>
+          </div>
 
           {/* Legend */}
-          <GlassCard className="p-4">
-            <h4 className="text-white font-medium mb-3">Status Legend</h4>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-[#2ecc71]" />
-                <span className="text-white/80 text-sm">Optimal</span>
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover-lift">
+            <h4 className="font-bold text-[#0f3057] mb-3">Status Legend</h4>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 rounded-full bg-[#2ecc71]" />
+                <span className="text-gray-700 text-sm">Optimal Performance</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-[#f39c12]" />
-                <span className="text-white/80 text-sm">Warning</span>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 rounded-full bg-[#f39c12]" />
+                <span className="text-gray-700 text-sm">Warning Status</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-[#e74c3c]" />
-                <span className="text-white/80 text-sm">Critical</span>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 rounded-full bg-[#e74c3c]" />
+                <span className="text-gray-700 text-sm">Critical Issues</span>
               </div>
             </div>
-          </GlassCard>
+          </div>
+
+          {/* Summary Stats */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover-lift">
+            <h4 className="font-bold text-[#0f3057] mb-3">Network Summary</h4>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600 text-sm">Total Sites:</span>
+                <span className="font-bold text-[#0f3057]">{microgridSites.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 text-sm">Optimal:</span>
+                <span className="font-bold text-[#2ecc71]">
+                  {microgridSites.filter(s => s.status === 'good').length}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 text-sm">Warnings:</span>
+                <span className="font-bold text-[#f39c12]">
+                  {microgridSites.filter(s => s.status === 'warning').length}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600 text-sm">Critical:</span>
+                <span className="font-bold text-[#e74c3c]">
+                  {microgridSites.filter(s => s.status === 'critical').length}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

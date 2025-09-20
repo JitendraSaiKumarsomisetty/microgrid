@@ -8,12 +8,11 @@ import {
   DollarSign, 
   Activity,
   Power,
-  Fuel
+  Fuel,
+  TrendingUp,
+  TrendingDown
 } from 'lucide-react';
-import { useLanguage } from '../hooks/useLanguage';
-import { getTranslation } from '../utils/translations';
 import { Alert, LiveData } from '../types';
-import GlassCard from './GlassCard';
 import MetricCard from './MetricCard';
 import EnergyFlowDiagram from './EnergyFlowDiagram';
 import LoadManagement from './LoadManagement';
@@ -35,85 +34,91 @@ const Dashboard: React.FC<DashboardProps> = ({
   onControlAction, 
   recentAlerts 
 }) => {
-  const { currentLanguage } = useLanguage();
-
   return (
     <div className="space-y-6">
       {/* Key Metrics Row */}
       <div className="grid grid-cols-4 gap-6">
         <MetricCard
-          title={getTranslation('liveSolarGeneration', currentLanguage)}
-          value={`${liveData.solarGeneration.toFixed(2)} ${getTranslation('kw', currentLanguage)}`}
+          title="Live Solar Generation"
+          value={`${liveData.solarGeneration.toFixed(2)} kW`}
           icon={<Sun className="w-6 h-6" />}
           color="text-[#f39c12]"
-          bgColor="bg-[#f39c12]/20"
+          bgColor="bg-gradient-to-r from-orange-400 to-yellow-400"
+          trend={liveData.solarGeneration > 4 ? 'up' : 'down'}
         />
         <MetricCard
-          title={getTranslation('energyConsumed', currentLanguage)}
-          value={`${liveData.energyConsumed.toFixed(2)} ${getTranslation('kw', currentLanguage)}`}
+          title="Energy Consumed"
+          value={`${liveData.energyConsumed.toFixed(2)} kW`}
           icon={<Zap className="w-6 h-6" />}
           color="text-[#3498db]"
-          bgColor="bg-[#3498db]/20"
+          bgColor="bg-gradient-to-r from-blue-400 to-cyan-400"
+          trend={liveData.energyConsumed < 3.5 ? 'down' : 'up'}
         />
         <MetricCard
-          title={getTranslation('solarPanelAngle', currentLanguage)}
-          value={`Az: ${liveData.solarAzimuth}${getTranslation('degrees', currentLanguage)} | Tilt: ${liveData.solarTilt}${getTranslation('degrees', currentLanguage)}`}
+          title="Solar Panel Angle"
+          value={`Az: ${liveData.solarAzimuth}° | Tilt: ${liveData.solarTilt}°`}
           icon={<Compass className="w-6 h-6" />}
           color="text-[#9b59b6]"
-          bgColor="bg-[#9b59b6]/20"
+          bgColor="bg-gradient-to-r from-purple-400 to-pink-400"
         />
         <MetricCard
-          title={getTranslation('carbonSavings', currentLanguage)}
-          value={`${liveData.carbonSavings.toFixed(0)} ${getTranslation('kg', currentLanguage)} CO₂`}
+          title="Carbon Savings"
+          value={`${liveData.carbonSavings.toFixed(0)} kg CO₂`}
           icon={<Leaf className="w-6 h-6" />}
           color="text-[#2ecc71]"
-          bgColor="bg-[#2ecc71]/20"
+          bgColor="bg-gradient-to-r from-green-400 to-emerald-400"
+          trend="up"
         />
       </div>
 
       {/* Second Metrics Row */}
       <div className="grid grid-cols-4 gap-6">
         <MetricCard
-          title={getTranslation('financialSavings', currentLanguage)}
-          value={`${getTranslation('rupees', currentLanguage)}${liveData.financialSavings.toFixed(0)}`}
+          title="Financial Savings"
+          value={`₹${liveData.financialSavings.toFixed(0)}`}
           icon={<DollarSign className="w-6 h-6" />}
           color="text-[#27ae60]"
-          bgColor="bg-[#27ae60]/20"
+          bgColor="bg-gradient-to-r from-green-500 to-teal-400"
+          trend="up"
         />
-        <GlassCard className="p-6">
+        
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover-lift">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-white">{getTranslation('batteryState', currentLanguage)}</h3>
+            <h3 className="font-semibold text-gray-900">Battery State</h3>
             <Battery className="w-6 h-6 text-[#2ecc71]" />
           </div>
           <BatteryGauge percentage={liveData.batteryCharge} />
-        </GlassCard>
-        <GlassCard className="p-6">
+        </div>
+        
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover-lift">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-white">{getTranslation('systemHealth', currentLanguage)}</h3>
+            <h3 className="font-semibold text-gray-900">System Health</h3>
             <Activity className="w-6 h-6 text-[#2ecc71]" />
           </div>
           <SystemHealthGauge score={liveData.systemHealth} />
-        </GlassCard>
+        </div>
+        
         <MetricCard
-          title={getTranslation('powerQuality', currentLanguage)}
-          value={`${liveData.powerQuality.toFixed(1)}${getTranslation('percent', currentLanguage)}`}
+          title="Power Quality"
+          value={`${liveData.powerQuality.toFixed(1)}%`}
           icon={<Zap className="w-6 h-6" />}
           color="text-[#3498db]"
-          bgColor="bg-[#3498db]/20"
+          bgColor="bg-gradient-to-r from-blue-400 to-indigo-400"
+          trend={liveData.powerQuality > 98 ? 'up' : 'stable'}
         />
       </div>
 
       <div className="grid grid-cols-3 gap-6">
         {/* Energy Flow Diagram */}
         <div className="col-span-2">
-          <GlassCard className="p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">{getTranslation('energyFlow', currentLanguage)}</h3>
-          <EnergyFlowDiagram 
-            solarGeneration={liveData.solarGeneration}
-            batteryCharge={liveData.batteryCharge}
-            communityLoad={liveData.energyConsumed}
-          />
-          </GlassCard>
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover-lift">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Energy Flow Diagram</h3>
+            <EnergyFlowDiagram 
+              solarGeneration={liveData.solarGeneration}
+              batteryCharge={liveData.batteryCharge}
+              communityLoad={liveData.energyConsumed}
+            />
+          </div>
         </div>
 
         {/* Recent Alerts */}
@@ -125,44 +130,55 @@ const Dashboard: React.FC<DashboardProps> = ({
       {/* Load Management and Diesel Generator */}
       <div className="grid grid-cols-2 gap-6">
         <LoadManagement />
-        <GlassCard className="p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">{getTranslation('dieselGenerator', currentLanguage)}</h3>
+        
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover-lift">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Diesel Generator</h3>
           <div className="space-y-4">
-            <div className="flex justify-between">
-              <span className="text-white/70">{getTranslation('status', currentLanguage)}:</span>
-              <span className={`font-medium ${
-                liveData.dieselStatus === 'Online' ? 'text-[#2ecc71]' : 'text-white/50'
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+              <span className="text-gray-600">Status:</span>
+              <span className={`font-medium px-3 py-1 rounded-full text-sm ${
+                liveData.dieselStatus === 'Online' 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-gray-100 text-gray-600'
               }`}>
-                {getTranslation(liveData.dieselStatus.toLowerCase(), currentLanguage)}
+                {liveData.dieselStatus}
               </span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-white/70">Runtime Today:</span>
-              <span className="text-white font-medium">{liveData.dieselRuntime} {getTranslation('hours', currentLanguage)}</span>
+            
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+              <span className="text-gray-600">Runtime Today:</span>
+              <span className="font-medium text-gray-900">{liveData.dieselRuntime} hours</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-white/70">Fuel Level:</span>
-              <span className="text-white font-medium">{liveData.dieselFuel}{getTranslation('percent', currentLanguage)}</span>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Fuel Level:</span>
+                <span className="font-medium text-gray-900">{liveData.dieselFuel}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className={`h-3 rounded-full transition-all duration-500 ${
+                    liveData.dieselFuel > 50 ? 'bg-gradient-to-r from-green-400 to-green-500' :
+                    liveData.dieselFuel > 25 ? 'bg-gradient-to-r from-yellow-400 to-orange-400' : 
+                    'bg-gradient-to-r from-red-400 to-red-500'
+                  }`}
+                  style={{ width: `${liveData.dieselFuel}%` }}
+                ></div>
+              </div>
             </div>
-            <div className="w-full bg-white/20 rounded-full h-2">
-              <div 
-                className={`h-2 rounded-full transition-all duration-500 ${
-                  liveData.dieselFuel > 50 ? 'bg-[#2ecc71]' :
-                  liveData.dieselFuel > 25 ? 'bg-[#f39c12]' : 'bg-[#e74c3c]'
-                }`}
-                style={{ width: `${liveData.dieselFuel}%` }}
-              ></div>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-white/70">Grid Connection:</span>
-              <span className={`font-medium ${
-                liveData.gridConnection === 'Connected' ? 'text-[#2ecc71]' : 'text-[#e74c3c]'
+            
+            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+              <span className="text-gray-600">Grid Connection:</span>
+              <span className={`font-medium px-3 py-1 rounded-full text-sm ${
+                liveData.gridConnection === 'Connected' 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-red-100 text-red-800'
               }`}>
-                {getTranslation(liveData.gridConnection.toLowerCase(), currentLanguage)}
+                {liveData.gridConnection}
               </span>
             </div>
           </div>
-        </GlassCard>
+        </div>
       </div>
 
       {/* Control Section */}

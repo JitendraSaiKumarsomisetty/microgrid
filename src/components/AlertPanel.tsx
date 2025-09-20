@@ -1,8 +1,5 @@
 import React from 'react';
 import { Bell, AlertTriangle, Info, CheckCircle, Clock } from 'lucide-react';
-import { useLanguage } from '../hooks/useLanguage';
-import { getTranslation } from '../utils/translations';
-import GlassCard from './GlassCard';
 
 interface Alert {
   id: number;
@@ -17,8 +14,6 @@ interface AlertPanelProps {
 }
 
 const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, compact = false }) => {
-  const { currentLanguage } = useLanguage();
-
   const getAlertIcon = (type: string) => {
     switch (type) {
       case 'warning':
@@ -28,49 +23,58 @@ const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, compact = false }) => {
       case 'success':
         return <CheckCircle className="w-4 h-4 text-[#2ecc71]" />;
       default:
-        return <Info className="w-4 h-4 text-white/50" />;
+        return <Info className="w-4 h-4 text-gray-500" />;
     }
   };
 
-  const getAlertBorder = (type: string) => {
+  const getAlertBg = (type: string) => {
     switch (type) {
       case 'warning':
-        return 'border-l-[#f39c12] bg-[#f39c12]/10';
+        return 'bg-orange-50 border-orange-200';
       case 'info':
-        return 'border-l-[#3498db] bg-[#3498db]/10';
+        return 'bg-blue-50 border-blue-200';
       case 'success':
-        return 'border-l-[#2ecc71] bg-[#2ecc71]/10';
+        return 'bg-green-50 border-green-200';
       default:
-        return 'border-l-white/50 bg-white/5';
+        return 'bg-gray-50 border-gray-200';
     }
   };
 
   return (
-    <GlassCard className={compact ? '' : 'h-full'}>
-      <div className="p-6 border-b border-white/20">
+    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 hover-lift ${compact ? '' : 'h-full'}`}>
+      <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-2">
-          <Bell className="w-5 h-5 text-white" />
-          <h3 className="text-lg font-semibold text-white">{getTranslation('liveAlerts', currentLanguage)}</h3>
+          <Bell className="w-5 h-5 text-[#0f3057]" />
+          <h3 className="text-lg font-semibold text-gray-900">Live Alerts</h3>
+          {alerts.length > 0 && (
+            <span className="bg-[#f39c12] text-white text-xs rounded-full px-2 py-1">
+              {alerts.length}
+            </span>
+          )}
         </div>
       </div>
       
       <div className="p-6">
         <div className={`space-y-4 overflow-y-auto ${compact ? 'max-h-64' : 'max-h-96'}`}>
           {alerts.length === 0 ? (
-            <p className="text-white/50 text-center py-8">No recent alerts</p>
+            <div className="text-center py-8">
+              <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
+              <p className="text-gray-500">No recent alerts</p>
+              <p className="text-sm text-gray-400">System running smoothly</p>
+            </div>
           ) : (
             alerts.map((alert) => (
               <div
                 key={alert.id}
-                className={`p-4 rounded-lg border-l-4 ${getAlertBorder(alert.type)} transition-all duration-300`}
+                className={`p-4 rounded-lg border transition-all duration-300 hover:shadow-md ${getAlertBg(alert.type)}`}
               >
                 <div className="flex items-start space-x-3">
                   {getAlertIcon(alert.type)}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-gray-900 mb-1">
                       {alert.message}
                     </p>
-                    <div className="flex items-center mt-2 text-xs text-white/60">
+                    <div className="flex items-center text-xs text-gray-500">
                       <Clock className="w-3 h-3 mr-1" />
                       <span>{alert.time.toLocaleTimeString()}</span>
                     </div>
@@ -81,7 +85,7 @@ const AlertPanel: React.FC<AlertPanelProps> = ({ alerts, compact = false }) => {
           )}
         </div>
       </div>
-    </GlassCard>
+    </div>
   );
 };
 

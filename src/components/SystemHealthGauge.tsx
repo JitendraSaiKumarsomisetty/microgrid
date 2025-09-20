@@ -16,6 +16,12 @@ const SystemHealthGauge: React.FC<SystemHealthGaugeProps> = ({ score }) => {
     return '#e74c3c'; // red
   };
 
+  const getGradient = (score: number) => {
+    if (score >= 90) return 'from-green-400 to-green-500';
+    if (score >= 70) return 'from-yellow-400 to-orange-400';
+    return 'from-red-400 to-red-500';
+  };
+
   return (
     <div className="relative w-32 h-32 mx-auto">
       <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 100 100">
@@ -24,7 +30,7 @@ const SystemHealthGauge: React.FC<SystemHealthGaugeProps> = ({ score }) => {
           cx="50"
           cy="50"
           r={radius}
-          stroke="rgba(255,255,255,0.2)"
+          stroke="#e5e7eb"
           strokeWidth="8"
           fill="none"
         />
@@ -44,8 +50,8 @@ const SystemHealthGauge: React.FC<SystemHealthGaugeProps> = ({ score }) => {
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-2xl font-bold text-white">{score.toFixed(0)}%</div>
-          <div className="text-xs text-white/70">Health</div>
+          <div className="text-2xl font-bold text-gray-900">{score.toFixed(0)}%</div>
+          <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded mt-1">Health</div>
         </div>
       </div>
     </div>
