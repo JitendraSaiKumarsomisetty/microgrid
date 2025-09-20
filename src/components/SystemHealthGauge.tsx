@@ -11,9 +11,9 @@ const SystemHealthGauge: React.FC<SystemHealthGaugeProps> = ({ score }) => {
   const strokeDashoffset = circumference - (score / 100) * circumference;
 
   const getColor = (score: number) => {
-    if (score >= 90) return '#10B981'; // green
-    if (score >= 70) return '#F59E0B'; // yellow
-    return '#EF4444'; // red
+    if (score >= 90) return '#2ecc71'; // green
+    if (score >= 70) return '#f39c12'; // yellow
+    return '#e74c3c'; // red
   };
 
   return (
@@ -24,7 +24,7 @@ const SystemHealthGauge: React.FC<SystemHealthGaugeProps> = ({ score }) => {
           cx="50"
           cy="50"
           r={radius}
-          stroke="#E5E7EB"
+          stroke="rgba(255,255,255,0.2)"
           strokeWidth="8"
           fill="none"
         />
@@ -44,8 +44,8 @@ const SystemHealthGauge: React.FC<SystemHealthGaugeProps> = ({ score }) => {
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-2xl font-bold text-gray-900">{score.toFixed(0)}%</div>
-          <div className="text-xs text-gray-600">Health</div>
+          <div className="text-2xl font-bold text-white">{score.toFixed(0)}%</div>
+          <div className="text-xs text-white/70">Health</div>
         </div>
       </div>
     </div>

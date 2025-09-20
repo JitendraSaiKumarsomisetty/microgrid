@@ -1,23 +1,28 @@
 import React from 'react';
 import { Heart, GraduationCap, Building, Home, Factory, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import { useLanguage } from '../hooks/useLanguage';
+import { getTranslation } from '../utils/translations';
+import GlassCard from './GlassCard';
 
 const LoadManagement: React.FC = () => {
+  const { currentLanguage } = useLanguage();
+
   const assets = [
-    { name: 'Hospital', icon: <Heart className="w-5 h-5" />, status: 'Powered', priority: 'Critical', power: '1.2 kW' },
-    { name: 'School', icon: <GraduationCap className="w-5 h-5" />, status: 'Powered', priority: 'High', power: '0.8 kW' },
-    { name: 'Community Center', icon: <Building className="w-5 h-5" />, status: 'Powered', priority: 'Medium', power: '0.6 kW' },
-    { name: 'Residential', icon: <Home className="w-5 h-5" />, status: 'Reduced', priority: 'Low', power: '0.4 kW' },
-    { name: 'Small Industry', icon: <Factory className="w-5 h-5" />, status: 'Shed', priority: 'Lowest', power: '0.0 kW' }
+    { name: 'Hospital', icon: <Heart className="w-5 h-5" />, status: 'Powered', priority: 'Critical', power: '1.2' },
+    { name: 'School', icon: <GraduationCap className="w-5 h-5" />, status: 'Powered', priority: 'High', power: '0.8' },
+    { name: 'Community Center', icon: <Building className="w-5 h-5" />, status: 'Powered', priority: 'Medium', power: '0.6' },
+    { name: 'Residential', icon: <Home className="w-5 h-5" />, status: 'Reduced', priority: 'Low', power: '0.4' },
+    { name: 'Small Industry', icon: <Factory className="w-5 h-5" />, status: 'Shed', priority: 'Lowest', power: '0.0' }
   ];
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'Powered':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
+        return <CheckCircle className="w-4 h-4 text-[#2ecc71]" />;
       case 'Reduced':
-        return <AlertCircle className="w-4 h-4 text-yellow-500" />;
+        return <AlertCircle className="w-4 h-4 text-[#f39c12]" />;
       case 'Shed':
-        return <XCircle className="w-4 h-4 text-red-500" />;
+        return <XCircle className="w-4 h-4 text-[#e74c3c]" />;
       default:
         return null;
     }
@@ -26,19 +31,19 @@ const LoadManagement: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Powered':
-        return 'bg-green-50 border-green-200 text-green-800';
+        return 'bg-[#2ecc71]/10 border-[#2ecc71]/30 text-white';
       case 'Reduced':
-        return 'bg-yellow-50 border-yellow-200 text-yellow-800';
+        return 'bg-[#f39c12]/10 border-[#f39c12]/30 text-white';
       case 'Shed':
-        return 'bg-red-50 border-red-200 text-red-800';
+        return 'bg-[#e74c3c]/10 border-[#e74c3c]/30 text-white';
       default:
-        return 'bg-gray-50 border-gray-200 text-gray-800';
+        return 'bg-white/5 border-white/20 text-white';
     }
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Load Management</h3>
+    <GlassCard className="p-6">
+      <h3 className="text-lg font-semibold text-white mb-4">{getTranslation('loadManagement', currentLanguage)}</h3>
       <div className="space-y-3">
         {assets.map((asset, index) => (
           <div
@@ -47,7 +52,7 @@ const LoadManagement: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="text-gray-600">
+                <div className="text-white/70">
                   {asset.icon}
                 </div>
                 <div>
@@ -56,14 +61,14 @@ const LoadManagement: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium">{asset.power}</span>
+                <span className="text-sm font-medium text-white">{asset.power} {getTranslation('kw', currentLanguage)}</span>
                 {getStatusIcon(asset.status)}
               </div>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </GlassCard>
   );
 };
 
