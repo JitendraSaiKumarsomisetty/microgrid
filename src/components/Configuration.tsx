@@ -28,10 +28,20 @@ interface ConfigurationProps {
     gridConnection: string;
     powerQuality: number;
     efficiency: number;
+    energySoldToGrid: number;
+    totalRevenue: number;
+    dailyRevenue: number;
+    monthlyRevenue: number;
   };
+  gridSellRate: number;
+  onGridSellRateChange: (rate: number) => void;
 }
 
-const Configuration: React.FC<ConfigurationProps> = ({ liveData }) => {
+const Configuration: React.FC<ConfigurationProps> = ({ 
+  liveData, 
+  gridSellRate, 
+  onGridSellRateChange 
+}) => {
   const [activeSection, setActiveSection] = useState('system');
   const [hasChanges, setHasChanges] = useState(false);
   
@@ -43,7 +53,8 @@ const Configuration: React.FC<ConfigurationProps> = ({ liveData }) => {
       maxLoadCapacity: 40,
       systemVoltage: 48,
       autoSwitchThreshold: 25,
-      maintenanceMode: false
+      maintenanceMode: false,
+      gridSellRate: gridSellRate
     },
     alerts: {
       lowBatteryThreshold: 25,
@@ -80,6 +91,11 @@ const Configuration: React.FC<ConfigurationProps> = ({ liveData }) => {
       }
     }));
     setHasChanges(true);
+  };
+
+  const handleGridSellRateChange = (value: number) => {
+    handleConfigChange('system', 'gridSellRate', value);
+    onGridSellRateChange(value);
   };
 
   const handleSave = () => {
@@ -461,11 +477,13 @@ const Configuration: React.FC<ConfigurationProps> = ({ liveData }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-[#0f3057] mb-2">System Configuration</h2>
-            <p className="text-gray-600">Manage system parameters and settings</p>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#0f3057] to-[#2ecc71] bg-clip-text text-transparent mb-2">
+              System Configuration
+            </h2>
+            <p className="text-gray-600">Manage system parameters, financial settings, and user preferences</p>
           </div>
           <div className="flex items-center space-x-3">
             {hasChanges && (
@@ -496,7 +514,7 @@ const Configuration: React.FC<ConfigurationProps> = ({ liveData }) => {
 
       <div className="grid grid-cols-4 gap-6">
         {/* Navigation */}
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
           <nav className="space-y-2">
             {sections.map((section) => (
               <button
@@ -516,18 +534,53 @@ const Configuration: React.FC<ConfigurationProps> = ({ liveData }) => {
         </div>
 
         {/* Configuration Content */}
-        <div className="col-span-3 bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+        <div className="col-span-3 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">
             {sections.find(s => s.id === activeSection)?.label}
           </h3>
+          
+          {/* Grid Sell Rate Setting */}
+          {activeSection === 'system' && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
+              <h4 className="font-semibold text-gray-900 mb-3">Financial Settings</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Grid Sell Rate (₹/kWh)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={gridSellRate}
+                    onChange={(e) => handleGridSellRateChange(Number(e.target.value))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Rate at which energy is sold to the grid</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Current Revenue Rate
+                  </label>
+                  <div className="px-3 py-2 bg-gray-100 rounded-lg">
+                    <span className="text-lg font-bold text-green-600">
+                      ₹{(liveData.energySoldToGrid * gridSellRate).toFixed(2)}/hour
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Based on current grid sales</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {renderSectionContent()}
         </div>
       </div>
 
       {/* Current System Status */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Current System Status</h3>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-5 gap-4">
           <div className="text-center p-4 bg-orange-50 rounded-lg">
             <Sun className="w-8 h-8 text-orange-500 mx-auto mb-2" />
             <p className="text-sm text-gray-600">Solar Generation</p>
@@ -547,6 +600,11 @@ const Configuration: React.FC<ConfigurationProps> = ({ liveData }) => {
             <Shield className="w-8 h-8 text-purple-500 mx-auto mb-2" />
             <p className="text-sm text-gray-600">System Health</p>
             <p className="text-xl font-bold text-purple-600">{liveData.systemHealth}%</p>
+          </div>
+          <div className="text-center p-4 bg-indigo-50 rounded-lg">
+            <DollarSign className="w-8 h-8 text-indigo-500 mx-auto mb-2" />
+            <p className="text-sm text-gray-600">Daily Revenue</p>
+            <p className="text-xl font-bold text-indigo-600">₹{liveData.dailyRevenue.toFixed(0)}</p>
           </div>
         </div>
       </div>

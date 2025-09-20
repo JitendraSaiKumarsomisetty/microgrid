@@ -8,10 +8,19 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-const HistoricalAnalytics: React.FC = () => {
+interface HistoricalAnalyticsProps {
+  gridSellRate: number;
+}
+
+const HistoricalAnalytics: React.FC<HistoricalAnalyticsProps> = ({ gridSellRate }) => {
   const [selectedPeriod, setSelectedPeriod] = useState('Last Week');
   const [selectedMetric, setSelectedMetric] = useState('energy');
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
+  const [reportDateRange, setReportDateRange] = useState({
+    from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    to: new Date().toISOString().split('T')[0]
+  });
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
   const generateHistoricalData = (period: string) => {
     const days = period === 'Today' ? 24 : period === 'Last Week' ? 7 : 30;
@@ -36,8 +45,15 @@ const HistoricalAnalytics: React.FC = () => {
         batteryLevel: 30 + Math.random() * 60,
         efficiency: 85 + Math.random() * 12,
         carbonSaved: baseGenerated * 0.5 + Math.random() * 5,
-        financialSavings: baseGenerated * 12 + Math.random() * 50
+        financialSavings: baseGenerated * 12 + Math.random() * 50,
+        energySoldToGrid: Math.max(0, baseGenerated - baseConsumed) * 0.7,
+        revenue: 0
       };
+      
+      // Calculate revenue
+      entry.revenue = entry.energySoldToGrid * gridSellRate;
+      
+      return entry;
     });
   };
 
@@ -99,15 +115,122 @@ const HistoricalAnalytics: React.FC = () => {
   const avgEfficiency = data.reduce((sum, d) => sum + d.efficiency, 0) / data.length;
   const totalCarbonSaved = data.reduce((sum, d) => sum + d.carbonSaved, 0);
   const totalSavings = data.reduce((sum, d) => sum + d.financialSavings, 0);
+  const totalEnergyToGrid = data.reduce((sum, d) => sum + (d.energySoldToGrid || 0), 0);
+  const totalRevenue = data.reduce((sum, d) => sum + (d.revenue || 0), 0);
+
+  const generateReport = async () => {
+    setIsGeneratingReport(true);
+    
+    // Simulate report generation
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    const reportData = {
+      dateRange: `${reportDateRange.from} to ${reportDateRange.to}`,
+      totalGenerated: totalGenerated.toFixed(1),
+      totalConsumed: totalConsumed.toFixed(1),
+      totalEnergyToGrid: totalEnergyToGrid.toFixed(1),
+      totalRevenue: totalRevenue.toFixed(2),
+      avgEfficiency: avgEfficiency.toFixed(1),
+      carbonSaved: totalCarbonSaved.toFixed(1),
+      gridSellRate: gridSellRate.toFixed(2)
+    };
+    
+    // Create and download PDF report
+    downloadPDFReport(reportData);
+    setIsGeneratingReport(false);
+  };
+
+  const downloadPDFReport = (reportData: any) => {
+    // Create a simple HTML report and convert to PDF-like format
+    const reportHTML = `
+      <html>
+        <head>
+          <title>GridVision India Report</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 40px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .logo { color: #0f3057; font-size: 24px; font-weight: bold; }
+            .date-range { color: #666; margin: 10px 0; }
+            .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
+            .metric { padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+            .metric-title { font-weight: bold; color: #0f3057; }
+            .metric-value { font-size: 18px; color: #2ecc71; margin-top: 5px; }
+            .footer { margin-top: 40px; text-align: center; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div class="logo">GridVision India</div>
+            <h2>Energy & Financial Performance Report</h2>
+            <div class="date-range">Period: ${reportData.dateRange}</div>
+            <div class="date-range">Generated on: ${new Date().toLocaleString()}</div>
+          </div>
+          
+          <div class="metrics">
+            <div class="metric">
+              <div class="metric-title">Total Energy Generated</div>
+              <div class="metric-value">${reportData.totalGenerated} kWh</div>
+            </div>
+            <div class="metric">
+              <div class="metric-title">Total Energy Consumed</div>
+              <div class="metric-value">${reportData.totalConsumed} kWh</div>
+            </div>
+            <div class="metric">
+              <div class="metric-title">Energy Sold to Grid</div>
+              <div class="metric-value">${reportData.totalEnergyToGrid} kWh</div>
+            </div>
+            <div class="metric">
+              <div class="metric-title">Total Revenue Earned</div>
+              <div class="metric-value">₹${reportData.totalRevenue}</div>
+            </div>
+            <div class="metric">
+              <div class="metric-title">Average System Efficiency</div>
+              <div class="metric-value">${reportData.avgEfficiency}%</div>
+            </div>
+            <div class="metric">
+              <div class="metric-title">Carbon Emissions Saved</div>
+              <div class="metric-value">${reportData.carbonSaved} kg CO₂</div>
+            </div>
+            <div class="metric">
+              <div class="metric-title">Grid Sell Rate</div>
+              <div class="metric-value">₹${reportData.gridSellRate}/kWh</div>
+            </div>
+            <div class="metric">
+              <div class="metric-title">Report Generation Date</div>
+              <div class="metric-value">${new Date().toLocaleDateString()}</div>
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p>This report was automatically generated by GridVision India Dashboard</p>
+            <p>© 2024 GridVision India - Advanced Microgrid Monitoring Platform</p>
+          </div>
+        </body>
+      </html>
+    `;
+    
+    // Create blob and download
+    const blob = new Blob([reportHTML], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `GridVision_India_Report_${new Date().toISOString().split('T')[0]}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="space-y-6">
       {/* Header with Controls */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-[#0f3057] mb-2">Historical Analytics</h2>
-            <p className="text-gray-600">Deep dive into historical performance data</p>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#0f3057] to-[#2ecc71] bg-clip-text text-transparent mb-2">
+              Performance & Financial Analytics
+            </h2>
+            <p className="text-gray-600">Comprehensive analysis of energy generation, consumption, and revenue</p>
           </div>
           <div className="flex items-center space-x-3">
             <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
@@ -184,35 +307,192 @@ const HistoricalAnalytics: React.FC = () => {
       </div>
 
       {/* Summary Statistics */}
-      <div className="grid grid-cols-6 gap-4">
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 text-center">
+      <div className="grid grid-cols-8 gap-4">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <p className="text-sm text-gray-600 mb-1">Total Generated</p>
           <p className="text-xl font-bold text-green-600">{totalGenerated.toFixed(1)} kWh</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 text-center">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <p className="text-sm text-gray-600 mb-1">Total Consumed</p>
           <p className="text-xl font-bold text-blue-600">{totalConsumed.toFixed(1)} kWh</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 text-center">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20 text-center">
+          <p className="text-sm text-gray-600 mb-1">Sold to Grid</p>
+          <p className="text-xl font-bold text-purple-600">{totalEnergyToGrid.toFixed(1)} kWh</p>
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20 text-center">
+          <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
+          <p className="text-xl font-bold text-indigo-600">₹{totalRevenue.toFixed(0)}</p>
+        </div>
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <p className="text-sm text-gray-600 mb-1">Avg Battery</p>
           <p className="text-xl font-bold text-yellow-600">{avgBattery.toFixed(0)}%</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 text-center">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <p className="text-sm text-gray-600 mb-1">Avg Efficiency</p>
           <p className="text-xl font-bold text-purple-600">{avgEfficiency.toFixed(1)}%</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 text-center">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <p className="text-sm text-gray-600 mb-1">Carbon Saved</p>
           <p className="text-xl font-bold text-green-700">{totalCarbonSaved.toFixed(0)} kg</p>
         </div>
-        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 text-center">
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <p className="text-sm text-gray-600 mb-1">Total Savings</p>
           <p className="text-xl font-bold text-blue-700">₹{totalSavings.toFixed(0)}</p>
         </div>
       </div>
 
+      {/* Energy Distribution Chart */}
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Energy Distribution</h3>
+          <div className="relative h-64 flex items-center justify-center">
+            <div className="relative w-48 h-48">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                {/* On-site usage */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="#2ecc71"
+                  strokeWidth="20"
+                  strokeDasharray={`${(totalConsumed / (totalGenerated || 1)) * 251.2} 251.2`}
+                />
+                {/* Grid sales */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  fill="none"
+                  stroke="#3498db"
+                  strokeWidth="20"
+                  strokeDasharray={`${(totalEnergyToGrid / (totalGenerated || 1)) * 251.2} 251.2`}
+                  strokeDashoffset={`-${(totalConsumed / (totalGenerated || 1)) * 251.2}`}
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{totalGenerated.toFixed(0)}</div>
+                  <div className="text-sm text-gray-600">kWh Total</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-center space-x-6 mt-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-[#2ecc71] rounded"></div>
+              <span className="text-sm text-gray-700">On-site Use ({((totalConsumed / (totalGenerated || 1)) * 100).toFixed(0)}%)</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className="w-4 h-4 bg-[#3498db] rounded"></div>
+              <span className="text-sm text-gray-700">Grid Sales ({((totalEnergyToGrid / (totalGenerated || 1)) * 100).toFixed(0)}%)</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Over Time</h3>
+          <div className="relative h-64">
+            <svg className="w-full h-full" viewBox="0 0 400 200">
+              {/* Grid lines */}
+              {[0, 25, 50, 75, 100].map((percent) => (
+                <line
+                  key={percent}
+                  x1="40"
+                  y1={180 - (percent / 100) * 140}
+                  x2="360"
+                  y2={180 - (percent / 100) * 140}
+                  stroke="#e5e7eb"
+                  strokeWidth="1"
+                />
+              ))}
+              
+              {/* Revenue line */}
+              <polyline
+                fill="none"
+                stroke="#8b5cf6"
+                strokeWidth="3"
+                points={data.slice(0, 10).map((item, index) => 
+                  `${40 + (index / 9) * 320},${180 - ((item.revenue || 0) / Math.max(...data.map(d => d.revenue || 0))) * 140}`
+                ).join(' ')}
+              />
+              
+              {/* Data points */}
+              {data.slice(0, 10).map((item, index) => (
+                <circle
+                  key={index}
+                  cx={40 + (index / 9) * 320}
+                  cy={180 - ((item.revenue || 0) / Math.max(...data.map(d => d.revenue || 0))) * 140}
+                  r="4"
+                  fill="#8b5cf6"
+                />
+              ))}
+            </svg>
+          </div>
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">Daily Revenue Trend</p>
+            <p className="text-lg font-bold text-purple-600">₹{(totalRevenue / data.length).toFixed(2)} avg/day</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Report Generator */}
+      <div className="bg-gradient-to-br from-[#0f3057]/10 to-[#2ecc71]/10 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+        <h3 className="text-xl font-semibold text-gray-900 mb-6">Report Generator</h3>
+        <div className="grid grid-cols-3 gap-6 items-end">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">From Date</label>
+            <input
+              type="date"
+              value={reportDateRange.from}
+              onChange={(e) => setReportDateRange(prev => ({ ...prev, from: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">To Date</label>
+            <input
+              type="date"
+              value={reportDateRange.to}
+              onChange={(e) => setReportDateRange(prev => ({ ...prev, to: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
+            />
+          </div>
+          <div>
+            <button
+              onClick={generateReport}
+              disabled={isGeneratingReport}
+              className={`w-full flex items-center justify-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                isGeneratingReport
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-[#0f3057] to-[#2ecc71] hover:from-[#0d2847] hover:to-[#27ae60] text-white hover:scale-105'
+              }`}
+            >
+              {isGeneratingReport ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full loading-spinner"></div>
+                  <span>Generating...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-5 h-5" />
+                  <span>Generate Energy & Finance Report</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+        <div className="mt-4 p-4 bg-white/50 rounded-lg">
+          <p className="text-sm text-gray-600">
+            <strong>Report will include:</strong> Total Energy Generated, Total Energy Consumed, 
+            Energy Sold to Grid, Total Revenue Earned (₹), Average System Efficiency, 
+            Carbon Emissions Saved, and detailed financial analysis for the selected period.
+          </p>
+        </div>
+      </div>
       {/* Main Chart */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">{metricData.label1} Analysis</h3>
         
         {chartType === 'bar' ? (
@@ -322,7 +602,7 @@ const HistoricalAnalytics: React.FC = () => {
       </div>
 
       {/* Detailed Data Table */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Detailed Data</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -331,10 +611,11 @@ const HistoricalAnalytics: React.FC = () => {
                 <th className="text-left py-2 px-3 font-medium text-gray-700">Period</th>
                 <th className="text-right py-2 px-3 font-medium text-gray-700">Generated (kWh)</th>
                 <th className="text-right py-2 px-3 font-medium text-gray-700">Consumed (kWh)</th>
+                <th className="text-right py-2 px-3 font-medium text-gray-700">Sold to Grid (kWh)</th>
+                <th className="text-right py-2 px-3 font-medium text-gray-700">Revenue (₹)</th>
                 <th className="text-right py-2 px-3 font-medium text-gray-700">Battery (%)</th>
                 <th className="text-right py-2 px-3 font-medium text-gray-700">Efficiency (%)</th>
                 <th className="text-right py-2 px-3 font-medium text-gray-700">Carbon Saved (kg)</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-700">Savings (₹)</th>
               </tr>
             </thead>
             <tbody>
@@ -343,10 +624,11 @@ const HistoricalAnalytics: React.FC = () => {
                   <td className="py-2 px-3 font-medium">{row.label}</td>
                   <td className="py-2 px-3 text-right">{row.generated.toFixed(1)}</td>
                   <td className="py-2 px-3 text-right">{row.consumed.toFixed(1)}</td>
+                  <td className="py-2 px-3 text-right">{(row.energySoldToGrid || 0).toFixed(1)}</td>
+                  <td className="py-2 px-3 text-right font-semibold text-green-600">₹{(row.revenue || 0).toFixed(2)}</td>
                   <td className="py-2 px-3 text-right">{row.batteryLevel.toFixed(0)}</td>
                   <td className="py-2 px-3 text-right">{row.efficiency.toFixed(1)}</td>
                   <td className="py-2 px-3 text-right">{row.carbonSaved.toFixed(1)}</td>
-                  <td className="py-2 px-3 text-right">{row.financialSavings.toFixed(0)}</td>
                 </tr>
               ))}
             </tbody>

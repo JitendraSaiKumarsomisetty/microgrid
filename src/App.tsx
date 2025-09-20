@@ -13,7 +13,10 @@ import {
   Play,
   Terminal,
   Users,
-  RefreshCw
+  RefreshCw,
+  Home,
+  IndianRupee,
+  Gauge
 } from 'lucide-react';
 import { Alert, LiveData } from './types';
 import LoginModal from './components/LoginModal';
@@ -34,26 +37,38 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [gridSellRate, setGridSellRate] = useState(4.5); // ₹/kWh
   const [alerts, setAlerts] = useState<Alert[]>([
     { 
       id: 1, 
       type: 'info', 
       category: 'system',
-      message: 'System running optimally', 
+      message: 'System running optimally across all sites', 
       time: new Date(), 
-      status: 'active' 
+      status: 'active',
+      location: 'Bhubaneswar'
     },
     { 
       id: 2, 
       type: 'success', 
       category: 'energy',
-      message: 'Solar panels adjusted to optimal angle', 
+      message: 'Peak solar generation achieved at Rourkela site', 
       time: new Date(Date.now() - 300000), 
-      status: 'active' 
+      status: 'active',
+      location: 'Rourkela'
+    },
+    { 
+      id: 3, 
+      type: 'warning', 
+      category: 'maintenance',
+      message: 'Battery maintenance scheduled for Puri site', 
+      time: new Date(Date.now() - 600000), 
+      status: 'active',
+      location: 'Puri'
     }
   ]);
 
-  // Simulated real-time data
+  // Enhanced live data with financial metrics
   const [liveData, setLiveData] = useState<LiveData>({
     solarGeneration: 4.25,
     energyConsumed: 3.10,
@@ -66,18 +81,20 @@ function App() {
     dieselStatus: 'Offline',
     dieselRuntime: 2.1,
     dieselFuel: 65,
-    gridConnection: 'Disconnected',
+    gridConnection: 'Connected',
     powerQuality: 98.5,
-    efficiency: 94.2
+    efficiency: 94.2,
+    energySoldToGrid: 1.15,
+    totalRevenue: 5.18,
+    dailyRevenue: 125.50,
+    monthlyRevenue: 3765.00
   });
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
     
-    // Simulate data refresh with animation
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Update all data with new values
     setCurrentTime(new Date());
     setLiveData(prev => ({
       ...prev,
@@ -86,7 +103,11 @@ function App() {
       batteryCharge: Math.max(15, Math.min(95, prev.batteryCharge + (Math.random() - 0.5) * 5)),
       systemHealth: Math.max(85, Math.min(98, prev.systemHealth + (Math.random() - 0.5) * 3)),
       powerQuality: Math.max(95, Math.min(100, prev.powerQuality + (Math.random() - 0.5) * 2)),
-      efficiency: Math.max(90, Math.min(98, prev.efficiency + (Math.random() - 0.5) * 2))
+      efficiency: Math.max(90, Math.min(98, prev.efficiency + (Math.random() - 0.5) * 2)),
+      energySoldToGrid: Math.max(0, prev.energySoldToGrid + (Math.random() - 0.5) * 0.3),
+      totalRevenue: prev.totalRevenue + Math.random() * 0.5,
+      dailyRevenue: prev.dailyRevenue + Math.random() * 10,
+      monthlyRevenue: prev.monthlyRevenue + Math.random() * 50
     }));
     
     setIsRefreshing(false);
@@ -99,7 +120,6 @@ function App() {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
       
-      // Simulate data fluctuations
       setLiveData(prev => ({
         ...prev,
         solarGeneration: Math.max(0, 4.25 + (Math.random() - 0.5) * 1.5),
@@ -109,27 +129,35 @@ function App() {
         financialSavings: prev.financialSavings + Math.random() * 10,
         systemHealth: Math.max(85, Math.min(98, prev.systemHealth + (Math.random() - 0.5) * 2)),
         powerQuality: Math.max(95, Math.min(100, prev.powerQuality + (Math.random() - 0.5) * 1)),
-        efficiency: Math.max(90, Math.min(98, prev.efficiency + (Math.random() - 0.5) * 1))
+        efficiency: Math.max(90, Math.min(98, prev.efficiency + (Math.random() - 0.5) * 1)),
+        energySoldToGrid: Math.max(0, prev.energySoldToGrid + (Math.random() - 0.5) * 0.2),
+        totalRevenue: prev.totalRevenue + Math.random() * 0.3,
+        dailyRevenue: prev.dailyRevenue + Math.random() * 5,
+        monthlyRevenue: prev.monthlyRevenue + Math.random() * 25
       }));
 
-      // Generate random alerts
+      // Generate random alerts with locations
       if (Math.random() < 0.15) {
+        const locations = ['Bhubaneswar', 'Rourkela', 'Puri', 'Hyderabad', 'Bangalore'];
         const alertTypes = [
           { type: 'info', category: 'system', message: 'Battery charge level optimal' },
           { type: 'success', category: 'energy', message: 'Peak solar generation detected' },
-          { type: 'info', category: 'system', message: 'Community load balanced successfully' },
+          { type: 'info', category: 'system', message: 'Grid synchronization successful' },
           { type: 'warning', category: 'weather', message: 'Cloud cover increasing, generation may decrease' },
-          { type: 'info', category: 'energy', message: 'Energy storage at recommended level' }
+          { type: 'info', category: 'energy', message: 'Energy storage at recommended level' },
+          { type: 'success', category: 'financial', message: 'Daily revenue target achieved' }
         ];
         
         const randomAlert = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+        const randomLocation = locations[Math.floor(Math.random() * locations.length)];
         const newAlert: Alert = {
           id: Date.now(),
           type: randomAlert.type as any,
           category: randomAlert.category as any,
           message: randomAlert.message,
           time: new Date(),
-          status: 'active'
+          status: 'active',
+          location: randomLocation
         };
         
         setAlerts(prev => [newAlert, ...prev.slice(0, 19)]);
@@ -150,7 +178,8 @@ function App() {
       category: 'system',
       message: `${action} initiated by operator`,
       time: new Date(),
-      status: 'active'
+      status: 'active',
+      location: 'Control Center'
     };
     setAlerts(prev => [newAlert, ...prev.slice(0, 19)]);
   };
@@ -168,8 +197,8 @@ function App() {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
     { id: 'indiaMap', label: 'India Map', icon: <Map className="w-5 h-5" /> },
-    { id: 'forecasting', label: 'Forecasting', icon: <TrendingUp className="w-5 h-5" /> },
     { id: 'analytics', label: 'Analytics', icon: <BarChart3 className="w-5 h-5" /> },
+    { id: 'forecasting', label: 'Forecasting', icon: <TrendingUp className="w-5 h-5" /> },
     { id: 'alerts', label: 'Alerts', icon: <Bell className="w-5 h-5" /> },
     { id: 'scenarios', label: 'Scenarios', icon: <Play className="w-5 h-5" /> },
     { id: 'diagnostics', label: 'Diagnostics', icon: <Terminal className="w-5 h-5" /> },
@@ -188,12 +217,13 @@ function App() {
             currentTime={currentTime}
             onControlAction={handleControlAction}
             recentAlerts={alerts.slice(0, 5)}
+            gridSellRate={gridSellRate}
           />
         );
       case 'forecasting':
         return <Forecasting />;
       case 'analytics':
-        return <HistoricalAnalytics />;
+        return <HistoricalAnalytics gridSellRate={gridSellRate} />;
       case 'alerts':
         return (
           <AlertsCenter 
@@ -202,7 +232,13 @@ function App() {
           />
         );
       case 'config':
-        return <Configuration liveData={liveData} />;
+        return (
+          <Configuration 
+            liveData={liveData} 
+            gridSellRate={gridSellRate}
+            onGridSellRateChange={setGridSellRate}
+          />
+        );
       case 'indiaMap':
         return <IndiaMap />;
       case 'scenarios':
@@ -217,21 +253,21 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f6f9]">
+    <div className="min-h-screen bg-gradient-to-br from-[#f4f6f9] to-[#e8f4f8]">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
+      <div className="bg-white/80 backdrop-blur-md shadow-lg border-b border-white/20">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-[#0f3057] to-[#2ecc71] rounded-xl">
-                <Zap className="w-6 h-6 text-white" />
+              <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-[#0f3057] via-[#2ecc71] to-[#f39c12] rounded-2xl shadow-lg">
+                <Zap className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#0f3057]">
-                  SmartGrid Dashboard
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-[#0f3057] to-[#2ecc71] bg-clip-text text-transparent">
+                  GridVision India
                 </h1>
-                <p className="text-gray-600 text-sm">
-                  Advanced Energy Management Platform
+                <p className="text-gray-600 text-sm font-medium">
+                  Advanced Microgrid Monitoring & Financial Analytics
                 </p>
               </div>
             </div>
@@ -240,26 +276,30 @@ function App() {
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className={`flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg text-gray-700 transition-all duration-300 hover-lift ${
+                className={`flex items-center space-x-2 px-4 py-2 bg-white/60 backdrop-blur-sm border border-white/30 hover:bg-white/80 rounded-xl text-gray-700 transition-all duration-300 hover:scale-105 shadow-lg ${
                   isRefreshing ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'loading-spinner' : ''}`} />
-                <span>Refresh Data</span>
+                <span className="font-medium">Refresh</span>
               </button>
               
               <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2 text-sm bg-green-50 px-3 py-2 rounded-lg">
-                  <Sun className="w-4 h-4 text-[#f39c12]" />
-                  <span className="text-gray-700">{liveData.solarGeneration.toFixed(2)} kW</span>
+                <div className="flex items-center space-x-2 text-sm bg-gradient-to-r from-[#f39c12]/20 to-[#f39c12]/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#f39c12]/20">
+                  <Sun className="w-5 h-5 text-[#f39c12]" />
+                  <span className="text-gray-700 font-semibold">{liveData.solarGeneration.toFixed(2)} kW</span>
                 </div>
-                <div className="flex items-center space-x-2 text-sm bg-blue-50 px-3 py-2 rounded-lg">
-                  <Battery className="w-4 h-4 text-[#2ecc71]" />
-                  <span className="text-gray-700">{liveData.batteryCharge}%</span>
+                <div className="flex items-center space-x-2 text-sm bg-gradient-to-r from-[#2ecc71]/20 to-[#2ecc71]/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#2ecc71]/20">
+                  <Battery className="w-5 h-5 text-[#2ecc71]" />
+                  <span className="text-gray-700 font-semibold">{liveData.batteryCharge}%</span>
                 </div>
-                <div className="flex items-center space-x-2 text-sm bg-purple-50 px-3 py-2 rounded-lg">
-                  <Activity className="w-4 h-4 text-[#0f3057]" />
-                  <span className="text-gray-700">{liveData.systemHealth}%</span>
+                <div className="flex items-center space-x-2 text-sm bg-gradient-to-r from-[#0f3057]/20 to-[#0f3057]/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#0f3057]/20">
+                  <Activity className="w-5 h-5 text-[#0f3057]" />
+                  <span className="text-gray-700 font-semibold">{liveData.systemHealth}%</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm bg-gradient-to-r from-purple-500/20 to-purple-500/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-purple-500/20">
+                  <IndianRupee className="w-5 h-5 text-purple-600" />
+                  <span className="text-gray-700 font-semibold">₹{liveData.dailyRevenue.toFixed(0)}</span>
                 </div>
               </div>
             </div>
@@ -268,23 +308,23 @@ function App() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white/60 backdrop-blur-md border-b border-white/20">
         <div className="max-w-7xl mx-auto px-6">
           <nav className="flex space-x-8 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as TabType)}
-                className={`flex items-center space-x-2 py-4 px-2 border-b-2 font-medium text-sm transition-all duration-300 whitespace-nowrap hover-lift ${
+                className={`flex items-center space-x-2 py-4 px-3 border-b-3 font-semibold text-sm transition-all duration-300 whitespace-nowrap hover:scale-105 ${
                   activeTab === tab.id
-                    ? 'border-[#0f3057] text-[#0f3057] bg-blue-50/50'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-[#0f3057] text-[#0f3057] bg-gradient-to-t from-[#0f3057]/10 to-transparent'
+                    : 'border-transparent text-gray-600 hover:text-[#0f3057] hover:border-gray-300'
                 }`}
               >
                 {tab.icon}
                 <span>{tab.label}</span>
                 {tab.id === 'alerts' && activeAlerts > 0 && (
-                  <span className="bg-[#f39c12] text-white text-xs rounded-full px-2 py-0.5 ml-2 animate-pulse">
+                  <span className="bg-gradient-to-r from-[#f39c12] to-[#e67e22] text-white text-xs rounded-full px-2 py-0.5 ml-2 animate-pulse shadow-lg">
                     {activeAlerts}
                   </span>
                 )}

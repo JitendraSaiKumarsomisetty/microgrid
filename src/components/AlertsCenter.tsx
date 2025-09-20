@@ -116,11 +116,13 @@ const AlertsCenter: React.FC<AlertsCenterProps> = ({ alerts, onUpdateStatus }) =
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-[#0f3057] mb-2">Alerts Center</h2>
-            <p className="text-gray-600">Monitor and manage all system alerts</p>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#0f3057] to-[#f39c12] bg-clip-text text-transparent mb-2">
+              Alert Management
+            </h2>
+            <p className="text-gray-600">Complete log of all alerts, filterable by date, severity, and location</p>
           </div>
           <Bell className="w-8 h-8 text-[#0f3057]" />
         </div>
@@ -155,7 +157,7 @@ const AlertsCenter: React.FC<AlertsCenterProps> = ({ alerts, onUpdateStatus }) =
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex items-center space-x-2">
             <Filter className="w-4 h-4 text-gray-500" />
@@ -203,6 +205,23 @@ const AlertsCenter: React.FC<AlertsCenterProps> = ({ alerts, onUpdateStatus }) =
               <option value="weather">Weather</option>
               <option value="energy">Energy</option>
               <option value="maintenance">Maintenance</option>
+              <option value="financial">Financial</option>
+            </select>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">Location:</span>
+            <select
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              className="px-3 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
+            >
+              <option value="all">All Locations</option>
+              <option value="Bhubaneswar">Bhubaneswar</option>
+              <option value="Rourkela">Rourkela</option>
+              <option value="Puri">Puri</option>
+              <option value="Hyderabad">Hyderabad</option>
+              <option value="Bangalore">Bangalore</option>
             </select>
           </div>
 
@@ -220,7 +239,7 @@ const AlertsCenter: React.FC<AlertsCenterProps> = ({ alerts, onUpdateStatus }) =
       </div>
 
       {/* Alerts List */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20">
         <div className="p-6 border-b border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900">
             Alert Log ({filteredAlerts.length} alerts)
@@ -248,6 +267,11 @@ const AlertsCenter: React.FC<AlertsCenterProps> = ({ alerts, onUpdateStatus }) =
                         <span className={`px-2 py-1 text-xs rounded-full font-medium ${getCategoryColor(alert.category)}`}>
                           {alert.category.toUpperCase()}
                         </span>
+                        {alert.location && (
+                          <span className="px-2 py-1 text-xs rounded-full font-medium bg-blue-100 text-blue-800">
+                            {alert.location}
+                          </span>
+                        )}
                         {getStatusBadge(alert.status)}
                       </div>
                       <p className="text-sm font-medium text-gray-900 mb-1">

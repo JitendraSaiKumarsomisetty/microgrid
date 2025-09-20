@@ -25,6 +25,7 @@ export interface Alert {
   message: string;
   time: Date;
   status: 'active' | 'acknowledged' | 'resolved';
+  location?: string;
 }
 
 export interface LiveData {
@@ -42,6 +43,10 @@ export interface LiveData {
   gridConnection: string;
   powerQuality: number;
   efficiency: number;
+  energySoldToGrid: number;
+  totalRevenue: number;
+  dailyRevenue: number;
+  monthlyRevenue: number;
 }
 
 export interface ScenarioResult {

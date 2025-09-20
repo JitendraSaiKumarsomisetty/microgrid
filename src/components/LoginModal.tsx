@@ -44,7 +44,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onLogin }) => {
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-[#0f3057] to-[#2ecc71] rounded-full mb-6 shadow-lg">
               <Shield className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">SmartGrid Dashboard</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">GridVision India</h1>
             <p className="text-white/80">Secure access to your energy management platform</p>
           </div>
 
