@@ -13,7 +13,8 @@ import {
   TrendingDown,
   Home,
   IndianRupee,
-  Gauge
+  Gauge,
+  Bell
 } from 'lucide-react';
 import { Alert, LiveData } from '../types';
 import MetricCard from './MetricCard';
