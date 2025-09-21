@@ -143,39 +143,39 @@ const ScenarioSimulator: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <GlassCard className="p-6">
+      <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-2">
+            <h2 className="text-2xl font-bold text-[#0f3057] mb-2">
               {getTranslation('scenarios', currentLanguage)}
             </h2>
-            <p className="text-white/80">
+            <p className="text-[#333333]">
               Simulate various scenarios to predict their impact on the microgrid system
             </p>
           </div>
           <button
             onClick={resetSimulation}
-            className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-all duration-300"
+            className="flex items-center space-x-2 px-4 py-2 bg-[#0f3057] hover:bg-[#0d2847] border border-[#0f3057] rounded-lg text-white transition-all duration-300"
           >
             <RotateCcw className="w-4 h-4" />
             <span>Reset</span>
           </button>
         </div>
-      </GlassCard>
+      </div>
 
       <div className="grid grid-cols-2 gap-6">
         {/* Scenario Selection */}
         <div className="space-y-4">
-          <GlassCard className="p-6">
-            <h3 className="text-lg font-bold text-white mb-4">Select Scenario</h3>
+          <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+            <h3 className="text-lg font-bold text-[#0f3057] mb-4">Select Scenario</h3>
             <div className="space-y-3">
               {scenarios.map((scenario) => (
                 <div
                   key={scenario.id}
                   className={`p-4 rounded-lg cursor-pointer transition-all duration-300 ${
                     selectedScenario === scenario.id
-                      ? 'bg-white/20 border border-white/30 scale-105'
-                      : 'bg-white/5 hover:bg-white/10 border border-white/10'
+                      ? 'bg-blue-50 border border-blue-200 scale-105'
+                      : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
                   }`}
                   onClick={() => !isSimulating && runSimulation(scenario.id)}
                 >
@@ -184,78 +184,78 @@ const ScenarioSimulator: React.FC = () => {
                       {scenario.icon}
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-white font-medium mb-1">{scenario.title}</h4>
-                      <p className="text-white/70 text-sm">{scenario.description}</p>
+                      <h4 className="text-[#0f3057] font-medium mb-1">{scenario.title}</h4>
+                      <p className="text-[#333333] text-sm">{scenario.description}</p>
                     </div>
                     {selectedScenario === scenario.id && isSimulating && (
                       <div className="animate-spin">
-                        <Play className="w-5 h-5 text-white" />
+                        <Play className="w-5 h-5 text-[#0f3057]" />
                       </div>
                     )}
                   </div>
                 </div>
               ))}
             </div>
-          </GlassCard>
+          </div>
         </div>
 
         {/* Results */}
         <div className="space-y-4">
           {simulationResult ? (
             <>
-              <GlassCard className="p-6">
-                <h3 className="text-lg font-bold text-white mb-4">Simulation Results</h3>
+              <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+                <h3 className="text-lg font-bold text-[#0f3057] mb-4">Simulation Results</h3>
                 <div className="space-y-4">
                   <div className="text-center">
-                    <h4 className="text-xl font-bold text-white mb-2">{simulationResult.scenario}</h4>
+                    <h4 className="text-xl font-bold text-[#0f3057] mb-2">{simulationResult.scenario}</h4>
                   </div>
                   
                   <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center p-3 bg-white/10 rounded-lg">
+                    <div className="text-center p-3 bg-gray-50 rounded-lg">
                       <div className={`text-2xl font-bold ${
                         simulationResult.energyImpact >= 0 ? 'text-[#2ecc71]' : 'text-[#e74c3c]'
                       }`}>
                         {simulationResult.energyImpact >= 0 ? '+' : ''}{simulationResult.energyImpact}%
                       </div>
-                      <div className="text-white/70 text-sm">Energy Impact</div>
+                      <div className="text-[#666666] text-sm">Energy Impact</div>
                     </div>
                     
-                    <div className="text-center p-3 bg-white/10 rounded-lg">
+                    <div className="text-center p-3 bg-gray-50 rounded-lg">
                       <div className={`text-2xl font-bold ${
                         simulationResult.batteryImpact >= 0 ? 'text-[#2ecc71]' : 'text-[#e74c3c]'
                       }`}>
                         {simulationResult.batteryImpact >= 0 ? '+' : ''}{simulationResult.batteryImpact}%
                       </div>
-                      <div className="text-white/70 text-sm">Battery Impact</div>
+                      <div className="text-[#666666] text-sm">Battery Impact</div>
                     </div>
                     
-                    <div className="text-center p-3 bg-white/10 rounded-lg">
+                    <div className="text-center p-3 bg-gray-50 rounded-lg">
                       <div className={`text-2xl font-bold ${
                         simulationResult.dieselHours <= 0 ? 'text-[#2ecc71]' : 'text-[#f39c12]'
                       }`}>
                         {simulationResult.dieselHours >= 0 ? '+' : ''}{simulationResult.dieselHours}h
                       </div>
-                      <div className="text-white/70 text-sm">Diesel Hours</div>
+                      <div className="text-[#666666] text-sm">Diesel Hours</div>
                     </div>
                   </div>
                 </div>
-              </GlassCard>
+              </div>
 
-              <GlassCard className="p-6">
-                <h4 className="text-lg font-bold text-white mb-3">Recommendation</h4>
+              <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+                <h4 className="text-lg font-bold text-[#0f3057] mb-3">Recommendation</h4>
                 <div className="flex items-start space-x-3">
                   <Lightbulb className="w-6 h-6 text-[#f39c12] flex-shrink-0 mt-1" />
-                  <p className="text-white/90">{simulationResult.recommendation}</p>
+                  <p className="text-[#333333]">{simulationResult.recommendation}</p>
                 </div>
-              </GlassCard>
+              </div>
             </>
           ) : (
-            <GlassCard className="p-6 h-64 flex items-center justify-center">
+            <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20 h-64 flex items-center justify-center">
               <div className="text-center">
-                <Play className="w-12 h-12 text-white/40 mx-auto mb-4" />
-                <p className="text-white/60">Select a scenario to run simulation</p>
+                <Play className="w-12 h-12 text-[#666666] mx-auto mb-4" />
+                <p className="text-[#666666]">Select a scenario to run simulation</p>
               </div>
-            </GlassCard>
+            </div>
           )}
         </div>
       </div>

@@ -134,49 +134,49 @@ const AdvancedDiagnostics: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <GlassCard className="p-6">
+      <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-2">
+            <h2 className="text-2xl font-bold text-[#0f3057] mb-2">
               {getTranslation('diagnostics', currentLanguage)}
             </h2>
-            <p className="text-white/80">
+            <p className="text-[#333333]">
               Intelligent system diagnostics with AI-powered fault analysis
             </p>
           </div>
           <div className="flex items-center space-x-3">
-            <button className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-white transition-all duration-300">
+            <button className="flex items-center space-x-2 px-4 py-2 bg-[#0f3057] hover:bg-[#0d2847] border border-[#0f3057] rounded-lg text-white transition-all duration-300">
               <Download className="w-4 h-4" />
               <span>Export Logs</span>
             </button>
-            <div className="flex items-center space-x-2 text-white/80">
+            <div className="flex items-center space-x-2 text-[#333333]">
               <Terminal className="w-5 h-5" />
               <span>{filteredLogs.length} entries</span>
             </div>
           </div>
         </div>
-      </GlassCard>
+      </div>
 
       {/* Filters */}
-      <GlassCard className="p-6">
+      <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex items-center space-x-2">
-            <Search className="w-4 h-4 text-white/60" />
+            <Search className="w-4 h-4 text-[#666666]" />
             <input
               type="text"
               placeholder="Search diagnostics..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:bg-white/20 focus:border-white/40 transition-all duration-300"
+              className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-[#333333] placeholder-gray-500 focus:bg-white focus:border-[#0f3057] transition-all duration-300"
             />
           </div>
 
           <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-white/60" />
+            <Filter className="w-4 h-4 text-[#666666]" />
             <select
               value={severityFilter}
               onChange={(e) => setSeverityFilter(e.target.value)}
-              className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:bg-white/20 focus:border-white/40 transition-all duration-300"
+              className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-[#333333] focus:bg-white focus:border-[#0f3057] transition-all duration-300"
             >
               <option value="all">All Severities</option>
               <option value="error">Error</option>
@@ -186,11 +186,11 @@ const AdvancedDiagnostics: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <span className="text-white/60 text-sm">Component:</span>
+            <span className="text-[#666666] text-sm">Component:</span>
             <select
               value={componentFilter}
               onChange={(e) => setComponentFilter(e.target.value)}
-              className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:bg-white/20 focus:border-white/40 transition-all duration-300"
+              className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-[#333333] focus:bg-white focus:border-[#0f3057] transition-all duration-300"
             >
               <option value="all">All Components</option>
               {components.map(component => (
@@ -199,69 +199,69 @@ const AdvancedDiagnostics: React.FC = () => {
             </select>
           </div>
         </div>
-      </GlassCard>
+      </div>
 
       {/* Summary Stats */}
       <div className="grid grid-cols-4 gap-4">
-        <GlassCard className="p-4 text-center">
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <div className="text-2xl font-bold text-[#e74c3c] mb-1">
             {logs.filter(log => log.severity === 'error').length}
           </div>
-          <div className="text-white/70 text-sm">Critical Issues</div>
-        </GlassCard>
-        <GlassCard className="p-4 text-center">
+          <div className="text-[#666666] text-sm">Critical Issues</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <div className="text-2xl font-bold text-[#f39c12] mb-1">
             {logs.filter(log => log.severity === 'warning').length}
           </div>
-          <div className="text-white/70 text-sm">Warnings</div>
-        </GlassCard>
-        <GlassCard className="p-4 text-center">
+          <div className="text-[#666666] text-sm">Warnings</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <div className="text-2xl font-bold text-[#3498db] mb-1">
             {logs.filter(log => log.severity === 'info').length}
           </div>
-          <div className="text-white/70 text-sm">Info Messages</div>
-        </GlassCard>
-        <GlassCard className="p-4 text-center">
-          <div className="text-2xl font-bold text-white mb-1">
+          <div className="text-[#666666] text-sm">Info Messages</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20 text-center">
+          <div className="text-2xl font-bold text-[#0f3057] mb-1">
             {components.length}
           </div>
-          <div className="text-white/70 text-sm">Components</div>
-        </GlassCard>
+          <div className="text-[#666666] text-sm">Components</div>
+        </div>
       </div>
 
       {/* Diagnostic Logs */}
-      <GlassCard className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Diagnostic Console</h3>
+      <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+        <h3 className="text-lg font-bold text-[#0f3057] mb-4">Diagnostic Console</h3>
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {filteredLogs.length === 0 ? (
-            <div className="text-center py-8 text-white/60">
+            <div className="text-center py-8 text-[#666666]">
               No diagnostic entries match the current filters
             </div>
           ) : (
             filteredLogs.map((log) => (
               <div
                 key={log.id}
-                className={`p-4 rounded-lg border-l-4 ${getSeverityColor(log.severity)} transition-all duration-300 hover:bg-white/5`}
+                className={`p-4 rounded-lg border-l-4 ${getSeverityColor(log.severity)} transition-all duration-300 hover:bg-gray-50`}
               >
                 <div className="flex items-start space-x-3">
                   {getSeverityIcon(log.severity)}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
-                        <span className="text-white font-medium">{log.component}</span>
-                        <span className="px-2 py-1 bg-white/10 rounded-full text-xs text-white/70">
+                        <span className="text-[#0f3057] font-medium">{log.component}</span>
+                        <span className="px-2 py-1 bg-gray-100 rounded-full text-xs text-[#666666]">
                           {log.severity.toUpperCase()}
                         </span>
                       </div>
-                      <span className="text-white/50 text-sm">
+                      <span className="text-[#666666] text-sm">
                         {log.timestamp.toLocaleString()}
                       </span>
                     </div>
-                    <p className="text-white/90 mb-2">{log.diagnosis}</p>
+                    <p className="text-[#333333] mb-2">{log.diagnosis}</p>
                     {log.recommendation && (
-                      <div className="flex items-start space-x-2 mt-2 p-2 bg-white/5 rounded">
+                      <div className="flex items-start space-x-2 mt-2 p-2 bg-gray-50 rounded">
                         <CheckCircle className="w-4 h-4 text-[#2ecc71] flex-shrink-0 mt-0.5" />
-                        <p className="text-white/80 text-sm">{log.recommendation}</p>
+                        <p className="text-[#333333] text-sm">{log.recommendation}</p>
                       </div>
                     )}
                   </div>
@@ -270,7 +270,7 @@ const AdvancedDiagnostics: React.FC = () => {
             ))
           )}
         </div>
-      </GlassCard>
+      </div>
     </div>
   );
 };

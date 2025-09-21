@@ -55,58 +55,58 @@ const CommunityPortal: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <GlassCard className="p-6">
+      <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-white mb-2">
+            <h2 className="text-2xl font-bold text-[#0f3057] mb-2">
               {getTranslation('community', currentLanguage)}
             </h2>
-            <p className="text-white/80">
+            <p className="text-[#333333]">
               Community energy dashboard and efficiency programs
             </p>
           </div>
-          <Users className="w-8 h-8 text-white/60" />
+          <Users className="w-8 h-8 text-[#666666]" />
         </div>
-      </GlassCard>
+      </div>
 
       {/* Community Stats */}
       <div className="grid grid-cols-5 gap-4">
-        <GlassCard className="p-4 text-center">
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <div className="text-2xl font-bold text-[#2ecc71] mb-1">
             {communityStats.totalHouseholds.toLocaleString()}
           </div>
-          <div className="text-white/70 text-sm">Total Households</div>
-        </GlassCard>
-        <GlassCard className="p-4 text-center">
+          <div className="text-[#666666] text-sm">Total Households</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <div className="text-2xl font-bold text-[#3498db] mb-1">
             {communityStats.activeParticipants.toLocaleString()}
           </div>
-          <div className="text-white/70 text-sm">Active Participants</div>
-        </GlassCard>
-        <GlassCard className="p-4 text-center">
+          <div className="text-[#666666] text-sm">Active Participants</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <div className="text-2xl font-bold text-[#f39c12] mb-1">
             ₹{(communityStats.totalSavings / 1000).toFixed(0)}K
           </div>
-          <div className="text-white/70 text-sm">Total Savings</div>
-        </GlassCard>
-        <GlassCard className="p-4 text-center">
+          <div className="text-[#666666] text-sm">Total Savings</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20 text-center">
           <div className="text-2xl font-bold text-[#2ecc71] mb-1">
             {communityStats.carbonReduced} kg
           </div>
-          <div className="text-white/70 text-sm">CO₂ Reduced</div>
-        </GlassCard>
-        <GlassCard className="p-4 text-center">
-          <div className="text-2xl font-bold text-white mb-1">
+          <div className="text-[#666666] text-sm">CO₂ Reduced</div>
+        </div>
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20 text-center">
+          <div className="text-2xl font-bold text-[#0f3057] mb-1">
             {communityStats.energyEfficiency}%
           </div>
-          <div className="text-white/70 text-sm">Avg Efficiency</div>
-        </GlassCard>
+          <div className="text-[#666666] text-sm">Avg Efficiency</div>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
         {/* Energy Saving Tips */}
-        <GlassCard className="p-6">
-          <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+          <h3 className="text-lg font-bold text-[#0f3057] mb-4 flex items-center">
             <Lightbulb className="w-5 h-5 mr-2 text-[#f39c12]" />
             Energy Saving Tips
           </h3>
@@ -116,8 +116,8 @@ const CommunityPortal: React.FC = () => {
                 key={index}
                 className={`p-4 rounded-lg cursor-pointer transition-all duration-300 ${
                   selectedTip === index
-                    ? 'bg-white/20 border border-white/30'
-                    : 'bg-white/5 hover:bg-white/10'
+                    ? 'bg-blue-50 border border-blue-200'
+                    : 'bg-gray-50 hover:bg-gray-100'
                 }`}
                 onClick={() => setSelectedTip(index)}
               >
@@ -126,8 +126,8 @@ const CommunityPortal: React.FC = () => {
                     {tip.icon}
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-white font-medium mb-1">{tip.title}</h4>
-                    <p className="text-white/70 text-sm mb-2">{tip.description}</p>
+                    <h4 className="text-[#0f3057] font-medium mb-1">{tip.title}</h4>
+                    <p className="text-[#333333] text-sm mb-2">{tip.description}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-[#2ecc71] font-medium text-sm">
                         Potential Savings: {tip.savings}
@@ -138,11 +138,11 @@ const CommunityPortal: React.FC = () => {
               </div>
             ))}
           </div>
-        </GlassCard>
+        </div>
 
         {/* Efficiency Leaderboard */}
-        <GlassCard className="p-6">
-          <h3 className="text-lg font-bold text-white mb-4 flex items-center">
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+          <h3 className="text-lg font-bold text-[#0f3057] mb-4 flex items-center">
             <Trophy className="w-5 h-5 mr-2 text-[#f39c12]" />
             Efficiency Leaderboard
           </h3>
@@ -150,16 +150,16 @@ const CommunityPortal: React.FC = () => {
             {leaderboard.map((entry) => (
               <div
                 key={entry.rank}
-                className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-all duration-300"
+                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-300"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="flex items-center justify-center w-8 h-8 bg-white/10 rounded-full">
-                    <span className="text-white font-bold text-sm">#{entry.rank}</span>
+                  <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full">
+                    <span className="text-[#0f3057] font-bold text-sm">#{entry.rank}</span>
                   </div>
                   {entry.icon}
                   <div>
-                    <div className="text-white font-medium text-sm">{entry.name}</div>
-                    <div className="text-white/60 text-xs">
+                    <div className="text-[#0f3057] font-medium text-sm">{entry.name}</div>
+                    <div className="text-[#666666] text-xs">
                       {entry.efficiency}% efficiency • ₹{entry.savings} saved
                     </div>
                   </div>
@@ -170,19 +170,19 @@ const CommunityPortal: React.FC = () => {
               </div>
             ))}
           </div>
-        </GlassCard>
+        </div>
       </div>
 
       {/* Current System Status - Simplified */}
-      <GlassCard className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Current System Status</h3>
+      <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+        <h3 className="text-lg font-bold text-[#0f3057] mb-4">Current System Status</h3>
         <div className="grid grid-cols-4 gap-6">
           <div className="text-center">
             <div className="w-16 h-16 bg-[#f39c12]/20 rounded-full flex items-center justify-center mx-auto mb-3">
               <Lightbulb className="w-8 h-8 text-[#f39c12]" />
             </div>
-            <div className="text-2xl font-bold text-white mb-1">4.2 kW</div>
-            <div className="text-white/70 text-sm">Solar Generation</div>
+            <div className="text-2xl font-bold text-[#0f3057] mb-1">4.2 kW</div>
+            <div className="text-[#666666] text-sm">Solar Generation</div>
             <div className="text-[#2ecc71] text-xs mt-1">Excellent</div>
           </div>
           
@@ -190,8 +190,8 @@ const CommunityPortal: React.FC = () => {
             <div className="w-16 h-16 bg-[#2ecc71]/20 rounded-full flex items-center justify-center mx-auto mb-3">
               <TrendingUp className="w-8 h-8 text-[#2ecc71]" />
             </div>
-            <div className="text-2xl font-bold text-white mb-1">78%</div>
-            <div className="text-white/70 text-sm">Battery Level</div>
+            <div className="text-2xl font-bold text-[#0f3057] mb-1">78%</div>
+            <div className="text-[#666666] text-sm">Battery Level</div>
             <div className="text-[#2ecc71] text-xs mt-1">Good</div>
           </div>
           
@@ -199,8 +199,8 @@ const CommunityPortal: React.FC = () => {
             <div className="w-16 h-16 bg-[#3498db]/20 rounded-full flex items-center justify-center mx-auto mb-3">
               <Users className="w-8 h-8 text-[#3498db]" />
             </div>
-            <div className="text-2xl font-bold text-white mb-1">3.1 kW</div>
-            <div className="text-white/70 text-sm">Community Load</div>
+            <div className="text-2xl font-bold text-[#0f3057] mb-1">3.1 kW</div>
+            <div className="text-[#666666] text-sm">Community Load</div>
             <div className="text-[#f39c12] text-xs mt-1">Moderate</div>
           </div>
           
@@ -208,16 +208,16 @@ const CommunityPortal: React.FC = () => {
             <div className="w-16 h-16 bg-[#2ecc71]/20 rounded-full flex items-center justify-center mx-auto mb-3">
               <Leaf className="w-8 h-8 text-[#2ecc71]" />
             </div>
-            <div className="text-2xl font-bold text-white mb-1">245 kg</div>
-            <div className="text-white/70 text-sm">CO₂ Saved Today</div>
+            <div className="text-2xl font-bold text-[#0f3057] mb-1">245 kg</div>
+            <div className="text-[#666666] text-sm">CO₂ Saved Today</div>
             <div className="text-[#2ecc71] text-xs mt-1">Excellent</div>
           </div>
         </div>
-      </GlassCard>
+      </div>
 
       {/* Community Announcements */}
-      <GlassCard className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Community Announcements</h3>
+      <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+        <h3 className="text-lg font-bold text-[#0f3057] mb-4">Community Announcements</h3>
         <div className="space-y-3">
           <div className="p-4 bg-[#3498db]/10 border border-[#3498db]/20 rounded-lg">
             <div className="flex items-start space-x-3">
@@ -225,8 +225,8 @@ const CommunityPortal: React.FC = () => {
                 <Users className="w-5 h-5 text-[#3498db]" />
               </div>
               <div>
-                <h4 className="text-white font-medium mb-1">Energy Efficiency Workshop</h4>
-                <p className="text-white/80 text-sm mb-2">
+                <h4 className="text-[#0f3057] font-medium mb-1">Energy Efficiency Workshop</h4>
+                <p className="text-[#333333] text-sm mb-2">
                   Join us this Saturday at 10 AM for a workshop on home energy efficiency tips and solar panel maintenance.
                 </p>
                 <span className="text-[#3498db] text-xs">Posted 2 hours ago</span>
@@ -240,8 +240,8 @@ const CommunityPortal: React.FC = () => {
                 <Trophy className="w-5 h-5 text-[#2ecc71]" />
               </div>
               <div>
-                <h4 className="text-white font-medium mb-1">Monthly Efficiency Challenge</h4>
-                <p className="text-white/80 text-sm mb-2">
+                <h4 className="text-[#0f3057] font-medium mb-1">Monthly Efficiency Challenge</h4>
+                <p className="text-[#333333] text-sm mb-2">
                   Congratulations to Sector A Residential for achieving 95% efficiency this month! Keep up the great work.
                 </p>
                 <span className="text-[#2ecc71] text-xs">Posted 1 day ago</span>
@@ -249,7 +249,7 @@ const CommunityPortal: React.FC = () => {
             </div>
           </div>
         </div>
-      </GlassCard>
+      </div>
     </div>
   );
 };

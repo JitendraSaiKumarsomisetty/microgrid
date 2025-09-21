@@ -9,7 +9,11 @@ import {
   Sun,
   Thermometer,
   AlertTriangle,
-  Info
+  Info,
+  User,
+  Mail,
+  Phone,
+  DollarSign
 } from 'lucide-react';
 
 interface ConfigurationProps {
@@ -42,157 +46,184 @@ const Configuration: React.FC<ConfigurationProps> = ({
   gridSellRate, 
   onGridSellRateChange 
 }) => {
-  const [activeSection, setActiveSection] = useState('system');
+  const [activeSection, setActiveSection] = useState('profile');
   const [hasChanges, setHasChanges] = useState(false);
   
-  // Configuration state
-  const [config, setConfig] = useState({
-    system: {
-      maxSolarCapacity: 50,
-      batteryCapacity: 100,
-      maxLoadCapacity: 40,
-      systemVoltage: 48,
-      autoSwitchThreshold: 25,
-      maintenanceMode: false,
-      gridSellRate: gridSellRate
-    },
-    alerts: {
-      lowBatteryThreshold: 25,
-      highLoadThreshold: 35,
-      temperatureThreshold: 45,
-      enableEmailAlerts: true,
-      enableSMSAlerts: false,
-      alertFrequency: 'immediate'
-    },
-    energy: {
-      solarTrackingEnabled: true,
-      autoLoadShedding: true,
-      dieselAutoStart: true,
-      dieselStartThreshold: 20,
-      gridReconnectThreshold: 80,
-      peakShavingEnabled: false
-    },
-    display: {
-      refreshInterval: 60,
-      theme: 'light',
-      language: 'english',
-      timezone: 'Asia/Kolkata',
-      showPredictions: true,
-      compactView: false
-    }
+  // User profile state
+  const [userProfile, setUserProfile] = useState({
+    name: 'Admin User',
+    email: 'admin@gridvision.in',
+    phone: '+91 9876543210'
   });
 
-  const handleConfigChange = (section: string, key: string, value: any) => {
-    setConfig(prev => ({
+  // Alert preferences state
+  const [alertPreferences, setAlertPreferences] = useState({
+    emailAlerts: true,
+    smsAlerts: false,
+    criticalAlertsOnly: false
+  });
+
+  const handleProfileChange = (field: string, value: string) => {
+    setUserProfile(prev => ({
       ...prev,
-      [section]: {
-        ...prev[section as keyof typeof prev],
-        [key]: value
-      }
+      [field]: value
+    }));
+    setHasChanges(true);
+  };
+
+  const handleAlertChange = (field: string, value: boolean) => {
+    setAlertPreferences(prev => ({
+      ...prev,
+      [field]: value
     }));
     setHasChanges(true);
   };
 
   const handleGridSellRateChange = (value: number) => {
-    handleConfigChange('system', 'gridSellRate', value);
     onGridSellRateChange(value);
+    setHasChanges(true);
   };
 
   const handleSave = () => {
     // Simulate saving configuration
-    console.log('Saving configuration:', config);
+    console.log('Saving configuration:', { userProfile, alertPreferences, gridSellRate });
     setHasChanges(false);
     // In a real app, this would make an API call
   };
 
   const handleReset = () => {
     // Reset to default values
+    setUserProfile({
+      name: 'Admin User',
+      email: 'admin@gridvision.in',
+      phone: '+91 9876543210'
+    });
+    setAlertPreferences({
+      emailAlerts: true,
+      smsAlerts: false,
+      criticalAlertsOnly: false
+    });
     setHasChanges(false);
-    // In a real app, this would reload from server
   };
 
   const sections = [
-    { id: 'system', label: 'System Parameters', icon: <Settings className="w-5 h-5" /> },
-    { id: 'alerts', label: 'Alert Settings', icon: <AlertTriangle className="w-5 h-5" /> },
-    { id: 'energy', label: 'Energy Management', icon: <Zap className="w-5 h-5" /> },
-    { id: 'display', label: 'Display Settings', icon: <Info className="w-5 h-5" /> }
+    { id: 'profile', label: 'User Profile', icon: <User className="w-5 h-5" /> },
+    { id: 'financial', label: 'Financial Configuration', icon: <DollarSign className="w-5 h-5" /> },
+    { id: 'alerts', label: 'Alert Preferences', icon: <AlertTriangle className="w-5 h-5" /> }
   ];
 
-  const renderSystemConfig = () => (
+  const renderProfileConfig = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Max Solar Capacity (kW)
+          <label className="block text-sm font-medium text-[#0f3057] mb-2">
+            Full Name
           </label>
-          <input
-            type="number"
-            value={config.system.maxSolarCapacity}
-            onChange={(e) => handleConfigChange('system', 'maxSolarCapacity', Number(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          />
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#666666]" />
+            <input
+              type="text"
+              value={userProfile.name}
+              onChange={(e) => handleProfileChange('name', e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-[#333333] focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
+              placeholder="Enter your full name"
+            />
+          </div>
         </div>
+        
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Battery Capacity (kWh)
+          <label className="block text-sm font-medium text-[#0f3057] mb-2">
+            Email Address
           </label>
-          <input
-            type="number"
-            value={config.system.batteryCapacity}
-            onChange={(e) => handleConfigChange('system', 'batteryCapacity', Number(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          />
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#666666]" />
+            <input
+              type="email"
+              value={userProfile.email}
+              onChange={(e) => handleProfileChange('email', e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-[#333333] focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
+              placeholder="Enter your email address"
+            />
+          </div>
         </div>
+        
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Max Load Capacity (kW)
+          <label className="block text-sm font-medium text-[#0f3057] mb-2">
+            Phone Number
           </label>
-          <input
-            type="number"
-            value={config.system.maxLoadCapacity}
-            onChange={(e) => handleConfigChange('system', 'maxLoadCapacity', Number(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          />
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#666666]" />
+            <input
+              type="tel"
+              value={userProfile.phone}
+              onChange={(e) => handleProfileChange('phone', e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-[#333333] focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
+              placeholder="Enter your phone number"
+            />
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            System Voltage (V)
-          </label>
-          <select
-            value={config.system.systemVoltage}
-            onChange={(e) => handleConfigChange('system', 'systemVoltage', Number(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          >
-            <option value={12}>12V</option>
-            <option value={24}>24V</option>
-            <option value={48}>48V</option>
-          </select>
+      </div>
+      
+      <button
+        onClick={handleSave}
+        disabled={!hasChanges}
+        className={`w-full flex items-center justify-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+          hasChanges
+            ? 'bg-[#0f3057] hover:bg-[#0d2847] text-white'
+            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+        }`}
+      >
+        <Save className="w-5 h-5" />
+        <span>Save Changes</span>
+      </button>
+    </div>
+  );
+
+  const renderFinancialConfig = () => (
+    <div className="space-y-6">
+      <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
+        <h4 className="font-semibold text-[#0f3057] mb-3">Grid Sell Rate Configuration</h4>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-[#0f3057] mb-2">
+              Grid Sell Rate (₹/kWh)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              value={gridSellRate}
+              onChange={(e) => handleGridSellRateChange(Number(e.target.value))}
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-[#333333] focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
+            />
+            <p className="text-xs text-[#666666] mt-1">Rate at which energy is sold to the grid</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-[#0f3057] mb-2">
+              Current Revenue Rate
+            </label>
+            <div className="px-3 py-2 bg-gray-100 rounded-lg">
+              <span className="text-lg font-bold text-green-600">
+                ₹{(liveData.energySoldToGrid * gridSellRate).toFixed(2)}/hour
+              </span>
+            </div>
+            <p className="text-xs text-[#666666] mt-1">Based on current grid sales</p>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Auto Switch Threshold (%)
-          </label>
-          <input
-            type="range"
-            min="10"
-            max="50"
-            value={config.system.autoSwitchThreshold}
-            onChange={(e) => handleConfigChange('system', 'autoSwitchThreshold', Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="text-sm text-gray-600 mt-1">{config.system.autoSwitchThreshold}%</div>
+      </div>
+      
+      <div className="grid grid-cols-3 gap-4">
+        <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
+          <p className="text-sm text-[#0f3057] font-medium mb-1">Daily Revenue</p>
+          <p className="text-2xl font-bold text-green-600">₹{liveData.dailyRevenue.toFixed(0)}</p>
         </div>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="maintenanceMode"
-            checked={config.system.maintenanceMode}
-            onChange={(e) => handleConfigChange('system', 'maintenanceMode', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="maintenanceMode" className="text-sm font-medium text-gray-700">
-            Maintenance Mode
-          </label>
+        <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <p className="text-sm text-[#0f3057] font-medium mb-1">Monthly Revenue</p>
+          <p className="text-2xl font-bold text-blue-600">₹{liveData.monthlyRevenue.toFixed(0)}</p>
+        </div>
+        <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+          <p className="text-sm text-[#0f3057] font-medium mb-1">Energy Sold</p>
+          <p className="text-2xl font-bold text-purple-600">{liveData.energySoldToGrid.toFixed(1)} kWh</p>
         </div>
       </div>
     </div>
@@ -200,259 +231,52 @@ const Configuration: React.FC<ConfigurationProps> = ({
 
   const renderAlertsConfig = () => (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Low Battery Threshold (%)
-          </label>
-          <input
-            type="range"
-            min="10"
-            max="50"
-            value={config.alerts.lowBatteryThreshold}
-            onChange={(e) => handleConfigChange('alerts', 'lowBatteryThreshold', Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="text-sm text-gray-600 mt-1">{config.alerts.lowBatteryThreshold}%</div>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            High Load Threshold (kW)
-          </label>
-          <input
-            type="number"
-            value={config.alerts.highLoadThreshold}
-            onChange={(e) => handleConfigChange('alerts', 'highLoadThreshold', Number(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Temperature Threshold (°C)
-          </label>
-          <input
-            type="number"
-            value={config.alerts.temperatureThreshold}
-            onChange={(e) => handleConfigChange('alerts', 'temperatureThreshold', Number(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Alert Frequency
-          </label>
-          <select
-            value={config.alerts.alertFrequency}
-            onChange={(e) => handleConfigChange('alerts', 'alertFrequency', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          >
-            <option value="immediate">Immediate</option>
-            <option value="5min">Every 5 minutes</option>
-            <option value="15min">Every 15 minutes</option>
-            <option value="hourly">Hourly</option>
-          </select>
-        </div>
-      </div>
-      
-      <div className="space-y-3">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="emailAlerts"
-            checked={config.alerts.enableEmailAlerts}
-            onChange={(e) => handleConfigChange('alerts', 'enableEmailAlerts', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="emailAlerts" className="text-sm font-medium text-gray-700">
-            Enable Email Alerts
+      <div className="space-y-4">
+        <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
+          <div>
+            <h4 className="font-medium text-[#0f3057]">Email Alerts</h4>
+            <p className="text-sm text-[#666666]">Receive alerts via email notifications</p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={alertPreferences.emailAlerts}
+              onChange={(e) => handleAlertChange('emailAlerts', e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0f3057]"></div>
           </label>
         </div>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="smsAlerts"
-            checked={config.alerts.enableSMSAlerts}
-            onChange={(e) => handleConfigChange('alerts', 'enableSMSAlerts', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="smsAlerts" className="text-sm font-medium text-gray-700">
-            Enable SMS Alerts
+        
+        <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
+          <div>
+            <h4 className="font-medium text-[#0f3057]">SMS Alerts</h4>
+            <p className="text-sm text-[#666666]">Receive alerts via SMS messages</p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={alertPreferences.smsAlerts}
+              onChange={(e) => handleAlertChange('smsAlerts', e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0f3057]"></div>
           </label>
         </div>
-      </div>
-    </div>
-  );
-
-  const renderEnergyConfig = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Diesel Auto Start Threshold (%)
-          </label>
-          <input
-            type="range"
-            min="10"
-            max="40"
-            value={config.energy.dieselStartThreshold}
-            onChange={(e) => handleConfigChange('energy', 'dieselStartThreshold', Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="text-sm text-gray-600 mt-1">{config.energy.dieselStartThreshold}%</div>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Grid Reconnect Threshold (%)
-          </label>
-          <input
-            type="range"
-            min="60"
-            max="95"
-            value={config.energy.gridReconnectThreshold}
-            onChange={(e) => handleConfigChange('energy', 'gridReconnectThreshold', Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="text-sm text-gray-600 mt-1">{config.energy.gridReconnectThreshold}%</div>
-        </div>
-      </div>
-      
-      <div className="space-y-3">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="solarTracking"
-            checked={config.energy.solarTrackingEnabled}
-            onChange={(e) => handleConfigChange('energy', 'solarTrackingEnabled', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="solarTracking" className="text-sm font-medium text-gray-700">
-            Enable Solar Tracking
-          </label>
-        </div>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="autoLoadShedding"
-            checked={config.energy.autoLoadShedding}
-            onChange={(e) => handleConfigChange('energy', 'autoLoadShedding', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="autoLoadShedding" className="text-sm font-medium text-gray-700">
-            Auto Load Shedding
-          </label>
-        </div>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="dieselAutoStart"
-            checked={config.energy.dieselAutoStart}
-            onChange={(e) => handleConfigChange('energy', 'dieselAutoStart', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="dieselAutoStart" className="text-sm font-medium text-gray-700">
-            Diesel Auto Start
-          </label>
-        </div>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="peakShaving"
-            checked={config.energy.peakShavingEnabled}
-            onChange={(e) => handleConfigChange('energy', 'peakShavingEnabled', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="peakShaving" className="text-sm font-medium text-gray-700">
-            Peak Shaving
-          </label>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderDisplayConfig = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Refresh Interval (seconds)
-          </label>
-          <select
-            value={config.display.refreshInterval}
-            onChange={(e) => handleConfigChange('display', 'refreshInterval', Number(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          >
-            <option value={30}>30 seconds</option>
-            <option value={60}>1 minute</option>
-            <option value={300}>5 minutes</option>
-            <option value={600}>10 minutes</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Theme
-          </label>
-          <select
-            value={config.display.theme}
-            onChange={(e) => handleConfigChange('display', 'theme', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          >
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="auto">Auto</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Language
-          </label>
-          <select
-            value={config.display.language}
-            onChange={(e) => handleConfigChange('display', 'language', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          >
-            <option value="english">English</option>
-            <option value="hindi">Hindi</option>
-            <option value="odia">Odia</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Timezone
-          </label>
-          <select
-            value={config.display.timezone}
-            onChange={(e) => handleConfigChange('display', 'timezone', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-          >
-            <option value="Asia/Kolkata">Asia/Kolkata</option>
-            <option value="UTC">UTC</option>
-          </select>
-        </div>
-      </div>
-      
-      <div className="space-y-3">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="showPredictions"
-            checked={config.display.showPredictions}
-            onChange={(e) => handleConfigChange('display', 'showPredictions', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="showPredictions" className="text-sm font-medium text-gray-700">
-            Show Predictions
-          </label>
-        </div>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="compactView"
-            checked={config.display.compactView}
-            onChange={(e) => handleConfigChange('display', 'compactView', e.target.checked)}
-            className="mr-2"
-          />
-          <label htmlFor="compactView" className="text-sm font-medium text-gray-700">
-            Compact View
+        
+        <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-lg">
+          <div>
+            <h4 className="font-medium text-[#0f3057]">Critical Alerts Only</h4>
+            <p className="text-sm text-[#666666]">Only receive high-priority system alerts</p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={alertPreferences.criticalAlertsOnly}
+              onChange={(e) => handleAlertChange('criticalAlertsOnly', e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0f3057]"></div>
           </label>
         </div>
       </div>
@@ -461,14 +285,12 @@ const Configuration: React.FC<ConfigurationProps> = ({
 
   const renderSectionContent = () => {
     switch (activeSection) {
-      case 'system':
-        return renderSystemConfig();
+      case 'profile':
+        return renderProfileConfig();
+      case 'financial':
+        return renderFinancialConfig();
       case 'alerts':
         return renderAlertsConfig();
-      case 'energy':
-        return renderEnergyConfig();
-      case 'display':
-        return renderDisplayConfig();
       default:
         return null;
     }
@@ -477,13 +299,13 @@ const Configuration: React.FC<ConfigurationProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
+      <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-[#0f3057] to-[#2ecc71] bg-clip-text text-transparent mb-2">
-              System Configuration
+            <h2 className="text-3xl font-bold text-[#0f3057] mb-2">
+              System Settings
             </h2>
-            <p className="text-gray-600">Manage system parameters, financial settings, and user preferences</p>
+            <p className="text-[#333333]">Manage your profile, financial settings, and alert preferences</p>
           </div>
           <div className="flex items-center space-x-3">
             {hasChanges && (
@@ -496,25 +318,13 @@ const Configuration: React.FC<ConfigurationProps> = ({
               <RefreshCw className="w-4 h-4" />
               <span>Reset</span>
             </button>
-            <button
-              onClick={handleSave}
-              disabled={!hasChanges}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                hasChanges
-                  ? 'bg-[#0f3057] hover:bg-[#0d2847] text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              <Save className="w-4 h-4" />
-              <span>Save Changes</span>
-            </button>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-4 gap-6">
         {/* Navigation */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/20">
+        <div className="bg-white/80 backdrop-blur-md rounded-xl p-4 shadow-lg border border-white/20">
           <nav className="space-y-2">
             {sections.map((section) => (
               <button
@@ -523,7 +333,7 @@ const Configuration: React.FC<ConfigurationProps> = ({
                 className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
                   activeSection === section.id
                     ? 'bg-[#0f3057] text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : 'text-[#333333] hover:bg-gray-100'
                 }`}
               >
                 {section.icon}
@@ -534,76 +344,42 @@ const Configuration: React.FC<ConfigurationProps> = ({
         </div>
 
         {/* Configuration Content */}
-        <div className="col-span-3 bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+        <div className="col-span-3 bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+          <h3 className="text-lg font-semibold text-[#0f3057] mb-6">
             {sections.find(s => s.id === activeSection)?.label}
           </h3>
-          
-          {/* Grid Sell Rate Setting */}
-          {activeSection === 'system' && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
-              <h4 className="font-semibold text-gray-900 mb-3">Financial Settings</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Grid Sell Rate (₹/kWh)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    value={gridSellRate}
-                    onChange={(e) => handleGridSellRateChange(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0f3057] focus:border-transparent"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Rate at which energy is sold to the grid</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Current Revenue Rate
-                  </label>
-                  <div className="px-3 py-2 bg-gray-100 rounded-lg">
-                    <span className="text-lg font-bold text-green-600">
-                      ₹{(liveData.energySoldToGrid * gridSellRate).toFixed(2)}/hour
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">Based on current grid sales</p>
-                </div>
-              </div>
-            </div>
-          )}
           
           {renderSectionContent()}
         </div>
       </div>
 
       {/* Current System Status */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Current System Status</h3>
+      <div className="bg-white/80 backdrop-blur-md rounded-xl p-6 shadow-lg border border-white/20">
+        <h3 className="text-lg font-semibold text-[#0f3057] mb-4">Current System Status</h3>
         <div className="grid grid-cols-5 gap-4">
           <div className="text-center p-4 bg-orange-50 rounded-lg">
             <Sun className="w-8 h-8 text-orange-500 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">Solar Generation</p>
+            <p className="text-sm text-[#666666]">Solar Generation</p>
             <p className="text-xl font-bold text-orange-600">{liveData.solarGeneration.toFixed(2)} kW</p>
           </div>
           <div className="text-center p-4 bg-green-50 rounded-lg">
             <Battery className="w-8 h-8 text-green-500 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">Battery Charge</p>
+            <p className="text-sm text-[#666666]">Battery Charge</p>
             <p className="text-xl font-bold text-green-600">{liveData.batteryCharge}%</p>
           </div>
           <div className="text-center p-4 bg-blue-50 rounded-lg">
             <Zap className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">Power Quality</p>
+            <p className="text-sm text-[#666666]">Power Quality</p>
             <p className="text-xl font-bold text-blue-600">{liveData.powerQuality.toFixed(1)}%</p>
           </div>
           <div className="text-center p-4 bg-purple-50 rounded-lg">
             <Shield className="w-8 h-8 text-purple-500 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">System Health</p>
+            <p className="text-sm text-[#666666]">System Health</p>
             <p className="text-xl font-bold text-purple-600">{liveData.systemHealth}%</p>
           </div>
           <div className="text-center p-4 bg-indigo-50 rounded-lg">
             <DollarSign className="w-8 h-8 text-indigo-500 mx-auto mb-2" />
-            <p className="text-sm text-gray-600">Daily Revenue</p>
+            <p className="text-sm text-[#666666]">Daily Revenue</p>
             <p className="text-xl font-bold text-indigo-600">₹{liveData.dailyRevenue.toFixed(0)}</p>
           </div>
         </div>
